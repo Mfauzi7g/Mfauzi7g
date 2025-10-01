@@ -5,10 +5,10 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 from pathlib import Path
-from pydantic import BaseModel, Field
-from typing import List
-import uuid
-from datetime import datetime
+from routers.auth import create_auth_router
+from routers.family import create_family_router
+from routers.screen_time import create_screen_time_router
+from routers.rewards import create_rewards_router
 
 
 ROOT_DIR = Path(__file__).parent
@@ -20,39 +20,32 @@ client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
 # Create the main app without a prefix
-app = FastAPI()
+app = FastAPI(title="Screen Time Parental Control API")
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
+# Create auth router and get the dependency
+auth_router = create_auth_router(db)
+get_current_user = auth_router.get_current_user
 
-# Define Models
-class StatusCheck(BaseModel):
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    client_name: str
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+# Create other routers with the auth dependency
+family_router = create_family_router(db, get_current_user)
+screen_time_router = create_screen_time_router(db, get_current_user)
+rewards_router = create_rewards_router(db, get_current_user)
 
-class StatusCheckCreate(BaseModel):
-    client_name: str
-
-# Add your routes to the router instead of directly to app
+# Health check endpoint
 @api_router.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "Screen Time API is running", "status": "healthy"}
 
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.dict()
-    status_obj = StatusCheck(**status_dict)
-    _ = await db.status_checks.insert_one(status_obj.dict())
-    return status_obj
+# Include all routers
+api_router.include_router(auth_router)
+api_router.include_router(family_router)
+api_router.include_router(screen_time_router)
+api_router.include_router(rewards_router)
 
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    status_checks = await db.status_checks.find().to_list(1000)
-    return [StatusCheck(**status_check) for status_check in status_checks]
-
-# Include the router in the main app
+# Include the main API router in the app
 app.include_router(api_router)
 
 app.add_middleware(
