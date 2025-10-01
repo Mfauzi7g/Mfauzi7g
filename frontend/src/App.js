@@ -30,6 +30,9 @@ const Dashboard = () => {
       setChildren(familyData);
       if (familyData.length > 0 && !selectedChild) {
         setSelectedChild(familyData[0]);
+      } else if (familyData.length === 0) {
+        // If there are no children, create sample data
+        await createSampleChildren();
       }
     } catch (error) {
       console.error('Error loading family:', error);
