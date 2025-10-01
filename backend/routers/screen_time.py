@@ -12,6 +12,10 @@ class AppUsage(BaseModel):
     time_spent: Dict[str, int]  # {"hours": 1, "minutes": 30}
     limit: Optional[Dict[str, int]] = None  # {"hours": 2, "minutes": 0}
     status: str  # "within_limit", "over_limit", "always_allowed"
+    
+    class Config:
+        # Allow None values for optional fields
+        validate_assignment = True
 
 class WeeklyData(BaseModel):
     day: str
