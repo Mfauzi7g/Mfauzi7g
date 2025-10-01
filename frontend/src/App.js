@@ -243,11 +243,13 @@ function App() {
   return (
     <div className="App">
       <AuthProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/*" element={<AppContent />} />
-          </Routes>
-        </BrowserRouter>
+        <DeviceProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/*" element={<AppContent />} />
+            </Routes>
+          </BrowserRouter>
+        </DeviceProvider>
       </AuthProvider>
     </div>
   );
