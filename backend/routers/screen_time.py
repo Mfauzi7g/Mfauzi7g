@@ -27,7 +27,7 @@ class ScreenTimeUsage(BaseModel):
     app_name: str
     category: str
     minutes_used: int
-    date: date = Field(default_factory=date.today)
+    usage_date: date = Field(default_factory=date.today)
 
 def create_screen_time_router(db: AsyncIOMotorDatabase, get_current_user):
     router = APIRouter(prefix="/screen-time", tags=["screen-time"])
