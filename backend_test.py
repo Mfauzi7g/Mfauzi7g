@@ -99,8 +99,9 @@ class ScreenTimeAPITester:
     def test_user_login(self):
         """Test user login endpoint"""
         try:
+            # Use the same email from registration
             login_data = {
-                "email": "parent@example.com",
+                "email": self.user_data.get("email") if self.user_data else "parent@example.com",
                 "password": "securepassword123"
             }
             
