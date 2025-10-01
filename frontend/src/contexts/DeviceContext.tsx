@@ -1,27 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { io, Socket } from 'socket.io-client';
+import { io } from 'socket.io-client';
 
-interface DeviceStatus {
-  deviceId: string;
-  deviceName: string;
-  platform: string;
-  isOnline: boolean;
-  lastSeen: string;
-  currentStatus: string;
-}
-
-interface DeviceContextType {
-  socket: Socket | null;
-  connectedDevices: DeviceStatus[];
-  sendCommand: (childId: string, command: any) => Promise<boolean>;
-  generatePairingCode: (childId: string) => Promise<string>;
-  getDeviceStatus: (childId: string) => Promise<DeviceStatus[]>;
-  setAppLimits: (childId: string, limits: any[]) => Promise<boolean>;
-  setDowntime: (childId: string, schedules: any[]) => Promise<boolean>;
-  emergencyUnlock: (childId: string, durationMinutes?: number) => Promise<boolean>;
-}
-
-const DeviceContext = createContext<DeviceContextType | null>(null);
+const DeviceContext = createContext();
 
 export const useDevice = () => {
   const context = useContext(DeviceContext);
@@ -33,9 +13,9 @@ export const useDevice = () => {
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
-export const DeviceProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [socket, setSocket] = useState<Socket | null>(null);
-  const [connectedDevices, setConnectedDevices] = useState<DeviceStatus[]>([]);
+export const DeviceProvider = ({ children }) => {
+  const [socket, setSocket] = useState(null);
+  const [connectedDevices, setConnectedDevices] = useState([]);
 
   useEffect(() => {
     // Initialize WebSocket connection
@@ -72,17 +52,17 @@ export const DeviceProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     };
   }, []);
 
-  const sendCommand = async (childId: string, command: any): Promise<boolean> => {
+  const sendCommand = async (childId, command) => {
     if (!socket) return false;
     
     return new Promise((resolve) => {
-      socket.emit('send_command', { childId, command }, (response: any) => {
+      socket.emit('send_command', { childId, command }, (response) => {
         resolve(response.success || false);
       });
     });
   };
 
-  const generatePairingCode = async (childId: string): Promise<string> => {
+  const generatePairingCode = async (childId) => {
     const token = localStorage.getItem('authToken');
     const response = await fetch(`${BACKEND_URL}/api/device-control/pairing-code/${childId}`, {
       method: 'POST',
@@ -97,7 +77,7 @@ export const DeviceProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return data.code;
   };
 
-  const getDeviceStatus = async (childId: string): Promise<DeviceStatus[]> => {
+  const getDeviceStatus = async (childId) => {
     const token = localStorage.getItem('authToken');
     const response = await fetch(`${BACKEND_URL}/api/device-control/device-status/${childId}`, {
       headers: {
@@ -111,7 +91,7 @@ export const DeviceProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return data.devices;
   };
 
-  const setAppLimits = async (childId: string, limits: any[]): Promise<boolean> => {
+  const setAppLimits = async (childId, limits) => {
     const token = localStorage.getItem('authToken');
     const response = await fetch(`${BACKEND_URL}/api/device-control/set-app-limits/${childId}`, {
       method: 'POST',
@@ -125,7 +105,7 @@ export const DeviceProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return response.ok;
   };
 
-  const setDowntime = async (childId: string, schedules: any[]): Promise<boolean> => {
+  const setDowntime = async (childId, schedules) => {
     const token = localStorage.getItem('authToken');
     const response = await fetch(`${BACKEND_URL}/api/device-control/set-downtime/${childId}`, {
       method: 'POST',
@@ -139,7 +119,7 @@ export const DeviceProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return response.ok;
   };
 
-  const emergencyUnlock = async (childId: string, durationMinutes = 30): Promise<boolean> => {
+  const emergencyUnlock = async (childId, durationMinutes = 30) => {
     const token = localStorage.getItem('authToken');
     const response = await fetch(`${BACKEND_URL}/api/device-control/emergency-unlock/${childId}?duration_minutes=${durationMinutes}`, {
       method: 'POST',
