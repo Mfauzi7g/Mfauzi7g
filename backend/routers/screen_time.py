@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from bson import ObjectId
 from datetime import datetime, date, timedelta
-from typing import List, Dict
+from typing import List, Dict, Optional
 from collections import defaultdict
 
 class AppUsage(BaseModel):
