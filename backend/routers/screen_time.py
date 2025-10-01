@@ -112,7 +112,7 @@ def create_screen_time_router(db: AsyncIOMotorDatabase, get_current_user):
             "app_name": usage.app_name,
             "category": usage.category,
             "minutes_used": usage.minutes_used,
-            "date": usage.date,
+            "date": usage.usage_date,
             "created_at": datetime.utcnow()
         }
         
