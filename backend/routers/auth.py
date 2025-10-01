@@ -38,20 +38,11 @@ class Token(BaseModel):
     user: User
 
 # Helper functions
-MAX_BCRYPT_PASSWORD_LEN = 72
-
-def truncate_password(password: str) -> str:
-    """Truncate password to 72 bytes for bcrypt compatibility"""
-    encoded = password.encode('utf-8')[:MAX_BCRYPT_PASSWORD_LEN]
-    return encoded.decode('utf-8', errors='ignore')
-
 def verify_password(plain_password, hashed_password):
-    safe_password = truncate_password(plain_password)
-    return pwd_context.verify(safe_password, hashed_password)
+    return bcrypt_sha256.verify(plain_password, hashed_password)
 
 def get_password_hash(password):
-    safe_password = truncate_password(password)
-    return pwd_context.hash(safe_password)
+    return bcrypt_sha256.hash(password)
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
