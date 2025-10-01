@@ -134,6 +134,8 @@ const Dashboard = () => {
         return <Overview selectedChild={selectedChild} />;
       case 'rewards':
         return <TaskManager selectedChild={selectedChild} onTaskUpdate={handleTaskUpdate} />;
+      case 'device-control':
+        return <DeviceControl selectedChild={selectedChild} onUpdate={handleTaskUpdate} />;
       case 'screen-time':
         return (
           <div className="p-8">
