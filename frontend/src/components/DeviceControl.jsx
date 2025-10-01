@@ -108,7 +108,7 @@ const DeviceControl = ({ selectedChild, onUpdate }) => {
 
     try {
       const updatedLimits = [...appLimits, newAppLimit];
-      await setAppLimits(selectedChild.id, updatedLimits);
+      await setDeviceAppLimits(selectedChild.id, updatedLimits);
       setAppLimits(updatedLimits);
       setNewAppLimit({
         app_name: '',
