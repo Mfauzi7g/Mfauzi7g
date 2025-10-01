@@ -71,8 +71,10 @@ class ScreenTimeAPITester:
     def test_user_registration(self):
         """Test user registration endpoint"""
         try:
+            import time
+            timestamp = int(time.time())
             user_data = {
-                "email": "parent@example.com",
+                "email": f"parent{timestamp}@example.com",
                 "password": "securepassword123",
                 "name": "Sarah Johnson"
             }
