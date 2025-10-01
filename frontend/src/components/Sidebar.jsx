@@ -10,13 +10,15 @@ import {
   BarChart3, 
   Settings, 
   Crown,
-  Users
+  Users,
+  Gift
 } from 'lucide-react';
-import { mockChildren, mockSubscriptionData } from '../data/mock';
+import { mockSubscriptionData } from '../data/mock';
 
-const Sidebar = ({ selectedChild, onSelectChild, activeTab, onTabChange, onUpgrade }) => {
+const Sidebar = ({ selectedChild, children, onSelectChild, activeTab, onTabChange, onUpgrade }) => {
   const menuItems = [
     { id: 'overview', label: 'Overview', icon: BarChart3 },
+    { id: 'rewards', label: 'Tasks & Rewards', icon: Gift },
     { id: 'screen-time', label: 'Screen Time', icon: Clock },
     { id: 'app-limits', label: 'App Limits', icon: Smartphone },
     { id: 'downtime', label: 'Downtime', icon: Shield },
@@ -69,7 +71,7 @@ const Sidebar = ({ selectedChild, onSelectChild, activeTab, onTabChange, onUpgra
           <span className="text-sm font-medium text-gray-700">Family Members</span>
         </div>
         <div className="space-y-2">
-          {mockChildren.map((child) => (
+          {children.map((child) => (
             <div 
               key={child.id}
               className={`p-3 rounded-lg cursor-pointer transition-colors ${
@@ -89,17 +91,24 @@ const Sidebar = ({ selectedChild, onSelectChild, activeTab, onTabChange, onUpgra
                     {child.name}
                   </p>
                   <p className="text-xs text-gray-500 truncate">
-                    {child.deviceName}
+                    {child.device_name}
                   </p>
                 </div>
-                <Badge 
-                  variant={child.status === 'active' ? 'default' : 
-                          child.status === 'downtime' ? 'destructive' : 'secondary'}
-                  className="text-xs"
-                >
-                  {child.status === 'active' ? 'Active' : 
-                   child.status === 'downtime' ? 'Downtime' : 'Limited'}
-                </Badge>
+                <div className="flex flex-col items-end">
+                  <Badge 
+                    variant={child.status === 'active' ? 'default' : 
+                            child.status === 'downtime' ? 'destructive' : 'secondary'}
+                    className="text-xs"
+                  >
+                    {child.status === 'active' ? 'Active' : 
+                     child.status === 'downtime' ? 'Downtime' : 'Limited'}
+                  </Badge>
+                  {child.earned_minutes > 0 && (
+                    <span className="text-xs text-green-600 mt-1">
+                      +{child.earned_minutes}m
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           ))}
