@@ -156,8 +156,9 @@ def create_screen_time_router(db: AsyncIOMotorDatabase, get_current_user):
         result = []
         for i in range(7):
             current_date = start_date + timedelta(days=i)
+            current_datetime = datetime.combine(current_date, datetime.min.time())
             day_name = current_date.strftime("%a")
-            minutes = daily_usage.get(current_date, 0)
+            minutes = daily_usage.get(current_datetime, 0)
             hours = minutes / 60.0
             
             result.append(WeeklyData(
