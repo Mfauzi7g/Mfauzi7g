@@ -128,13 +128,15 @@ def create_screen_time_router(db: AsyncIOMotorDatabase, get_current_user):
         # Get last 7 days of data
         end_date = date.today()
         start_date = end_date - timedelta(days=6)
+        end_datetime = datetime.combine(end_date, datetime.min.time())
+        start_datetime = datetime.combine(start_date, datetime.min.time())
         
         # Aggregate data by day
         pipeline = [
             {
                 "$match": {
                     "child_id": ObjectId(child_id),
-                    "date": {"$gte": start_date, "$lte": end_date}
+                    "date": {"$gte": start_datetime, "$lte": end_datetime}
                 }
             },
             {
