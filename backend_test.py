@@ -1,0 +1,549 @@
+#!/usr/bin/env python3
+"""
+Comprehensive Backend API Test Suite for Screen Time Parental Control App
+Tests all authentication, family management, screen time tracking, and rewards system endpoints
+"""
+
+import requests
+import json
+import os
+from datetime import datetime, date
+from typing import Dict, Any
+
+# Get backend URL from environment
+BACKEND_URL = "https://safeweb-kids-1.preview.emergentagent.com/api"
+
+class ScreenTimeAPITester:
+    def __init__(self):
+        self.base_url = BACKEND_URL
+        self.session = requests.Session()
+        self.auth_token = None
+        self.user_data = None
+        self.child_id = None
+        self.task_id = None
+        
+    def log_test(self, test_name: str, success: bool, details: str = ""):
+        """Log test results"""
+        status = "✅ PASS" if success else "❌ FAIL"
+        print(f"{status} {test_name}")
+        if details:
+            print(f"   Details: {details}")
+        if not success:
+            print()
+    
+    def make_request(self, method: str, endpoint: str, data: Dict[Any, Any] = None, headers: Dict[str, str] = None) -> requests.Response:
+        """Make HTTP request with proper error handling"""
+        url = f"{self.base_url}{endpoint}"
+        request_headers = headers or {}
+        
+        if self.auth_token:
+            request_headers["Authorization"] = f"Bearer {self.auth_token}"
+        
+        try:
+            if method.upper() == "GET":
+                response = self.session.get(url, headers=request_headers)
+            elif method.upper() == "POST":
+                response = self.session.post(url, json=data, headers=request_headers)
+            elif method.upper() == "PUT":
+                response = self.session.put(url, json=data, headers=request_headers)
+            elif method.upper() == "DELETE":
+                response = self.session.delete(url, headers=request_headers)
+            else:
+                raise ValueError(f"Unsupported HTTP method: {method}")
+            
+            return response
+        except requests.exceptions.RequestException as e:
+            print(f"Request failed: {e}")
+            raise
+    
+    def test_health_check(self):
+        """Test API health check endpoint"""
+        try:
+            response = self.make_request("GET", "/")
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}, Response: {response.text[:100]}"
+            self.log_test("Health Check", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Health Check", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_user_registration(self):
+        """Test user registration endpoint"""
+        try:
+            user_data = {
+                "email": "parent@example.com",
+                "password": "securepassword123",
+                "name": "Sarah Johnson"
+            }
+            
+            response = self.make_request("POST", "/auth/register", user_data)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                self.auth_token = data.get("access_token")
+                self.user_data = data.get("user")
+                details = f"User registered: {self.user_data.get('name')} ({self.user_data.get('email')})"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("User Registration", success, details)
+            return success
+        except Exception as e:
+            self.log_test("User Registration", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_user_login(self):
+        """Test user login endpoint"""
+        try:
+            login_data = {
+                "email": "parent@example.com",
+                "password": "securepassword123"
+            }
+            
+            response = self.make_request("POST", "/auth/login", login_data)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                self.auth_token = data.get("access_token")
+                self.user_data = data.get("user")
+                details = f"Login successful for: {self.user_data.get('name')}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("User Login", success, details)
+            return success
+        except Exception as e:
+            self.log_test("User Login", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_get_current_user(self):
+        """Test get current user info endpoint"""
+        try:
+            response = self.make_request("GET", "/auth/me")
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                details = f"User info retrieved: {data.get('name')} - {data.get('subscription_status')}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("Get Current User", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Get Current User", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_create_child(self):
+        """Test creating a child"""
+        try:
+            child_data = {
+                "name": "Emma Johnson",
+                "age": 8,
+                "device_name": "Emma's iPad",
+                "avatar": "👧"
+            }
+            
+            response = self.make_request("POST", "/family/children", child_data)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                self.child_id = data.get("id")
+                details = f"Child created: {data.get('name')}, Age: {data.get('age')}, ID: {self.child_id}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("Create Child", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Create Child", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_get_family(self):
+        """Test getting family list"""
+        try:
+            response = self.make_request("GET", "/family")
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                details = f"Family retrieved: {len(data)} children found"
+                if data:
+                    details += f", First child: {data[0].get('name')}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("Get Family", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Get Family", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_update_child(self):
+        """Test updating child information"""
+        if not self.child_id:
+            self.log_test("Update Child", False, "No child ID available")
+            return False
+        
+        try:
+            update_data = {
+                "status": "limited"
+            }
+            
+            response = self.make_request("PUT", f"/family/children/{self.child_id}", update_data)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                details = f"Child updated: {data.get('name')}, Status: {data.get('status')}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("Update Child", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Update Child", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_log_screen_time_usage(self):
+        """Test logging app usage"""
+        if not self.child_id:
+            self.log_test("Log Screen Time Usage", False, "No child ID available")
+            return False
+        
+        try:
+            usage_data = {
+                "child_id": self.child_id,
+                "app_name": "YouTube",
+                "category": "Entertainment",
+                "minutes_used": 45,
+                "usage_date": date.today().isoformat()
+            }
+            
+            response = self.make_request("POST", f"/screen-time/{self.child_id}/usage", usage_data)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                details = f"Usage logged: {usage_data['app_name']} - {usage_data['minutes_used']} minutes"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("Log Screen Time Usage", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Log Screen Time Usage", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_get_screen_time_data(self):
+        """Test getting screen time data"""
+        if not self.child_id:
+            self.log_test("Get Screen Time Data", False, "No child ID available")
+            return False
+        
+        try:
+            response = self.make_request("GET", f"/screen-time/{self.child_id}")
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                details = f"Screen time data retrieved: {len(data)} apps tracked"
+                if data:
+                    app = data[0]
+                    details += f", First app: {app.get('name')} - {app.get('time_spent')}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("Get Screen Time Data", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Get Screen Time Data", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_get_weekly_analytics(self):
+        """Test getting weekly screen time analytics"""
+        if not self.child_id:
+            self.log_test("Get Weekly Analytics", False, "No child ID available")
+            return False
+        
+        try:
+            response = self.make_request("GET", f"/screen-time/{self.child_id}/weekly")
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                details = f"Weekly data retrieved: {len(data)} days"
+                if data:
+                    total_hours = sum(day.get('hours', 0) for day in data)
+                    details += f", Total hours this week: {total_hours:.1f}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("Get Weekly Analytics", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Get Weekly Analytics", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_get_screen_time_summary(self):
+        """Test getting screen time summary"""
+        if not self.child_id:
+            self.log_test("Get Screen Time Summary", False, "No child ID available")
+            return False
+        
+        try:
+            response = self.make_request("GET", f"/screen-time/{self.child_id}/summary")
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                today = data.get('today', {})
+                this_week = data.get('this_week', {})
+                details = f"Summary: Today {today.get('hours', 0)}h {today.get('minutes', 0)}m, This week {this_week.get('hours', 0)}h {this_week.get('minutes', 0)}m"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("Get Screen Time Summary", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Get Screen Time Summary", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_create_task(self):
+        """Test creating a task for child"""
+        if not self.child_id:
+            self.log_test("Create Task", False, "No child ID available")
+            return False
+        
+        try:
+            task_data = {
+                "title": "Clean your room",
+                "description": "Organize toys, make bed, and vacuum floor",
+                "category": "chores",
+                "reward_minutes": 30
+            }
+            
+            response = self.make_request("POST", f"/rewards/{self.child_id}/tasks", task_data)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                self.task_id = data.get("id")
+                details = f"Task created: {data.get('title')} - {data.get('reward_minutes')} minutes reward, ID: {self.task_id}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("Create Task", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Create Task", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_complete_task(self):
+        """Test completing a task"""
+        if not self.task_id:
+            self.log_test("Complete Task", False, "No task ID available")
+            return False
+        
+        try:
+            response = self.make_request("PUT", f"/rewards/tasks/{self.task_id}/complete")
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                details = f"Task completed: {data.get('message')}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("Complete Task", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Complete Task", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_approve_task(self):
+        """Test approving a completed task"""
+        if not self.task_id:
+            self.log_test("Approve Task", False, "No task ID available")
+            return False
+        
+        try:
+            response = self.make_request("PUT", f"/rewards/tasks/{self.task_id}/approve")
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                details = f"Task approved: {data.get('message')}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("Approve Task", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Approve Task", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_get_child_rewards(self):
+        """Test getting child rewards and tasks"""
+        if not self.child_id:
+            self.log_test("Get Child Rewards", False, "No child ID available")
+            return False
+        
+        try:
+            response = self.make_request("GET", f"/rewards/{self.child_id}")
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                details = f"Rewards data: {data.get('child_name')} has {data.get('earned_minutes')} earned minutes, {len(data.get('pending_tasks', []))} pending tasks, {data.get('total_tasks_completed')} completed"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("Get Child Rewards", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Get Child Rewards", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_redeem_time(self):
+        """Test redeeming earned time"""
+        if not self.child_id:
+            self.log_test("Redeem Time", False, "No child ID available")
+            return False
+        
+        try:
+            # First check how many minutes the child has
+            rewards_response = self.make_request("GET", f"/rewards/{self.child_id}")
+            if rewards_response.status_code != 200:
+                self.log_test("Redeem Time", False, "Could not get child rewards data")
+                return False
+            
+            rewards_data = rewards_response.json()
+            earned_minutes = rewards_data.get('earned_minutes', 0)
+            
+            if earned_minutes < 15:
+                self.log_test("Redeem Time", False, f"Not enough earned minutes ({earned_minutes}) to redeem 15 minutes")
+                return False
+            
+            # Redeem 15 minutes
+            response = self.make_request("POST", f"/rewards/{self.child_id}/redeem", {"minutes_to_redeem": 15})
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                details = f"Time redeemed: {data.get('message')}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("Redeem Time", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Redeem Time", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_integration_flow(self):
+        """Test complete end-to-end integration flow"""
+        print("\n" + "="*60)
+        print("RUNNING COMPLETE INTEGRATION FLOW TEST")
+        print("="*60)
+        
+        # Step 1: Health check
+        if not self.test_health_check():
+            return False
+        
+        # Step 2: Register user
+        if not self.test_user_registration():
+            return False
+        
+        # Step 3: Login (optional, already have token from registration)
+        # self.test_user_login()
+        
+        # Step 4: Get current user info
+        if not self.test_get_current_user():
+            return False
+        
+        # Step 5: Create child
+        if not self.test_create_child():
+            return False
+        
+        # Step 6: Get family
+        if not self.test_get_family():
+            return False
+        
+        # Step 7: Update child
+        if not self.test_update_child():
+            return False
+        
+        # Step 8: Log screen time usage
+        if not self.test_log_screen_time_usage():
+            return False
+        
+        # Step 9: Get screen time data
+        if not self.test_get_screen_time_data():
+            return False
+        
+        # Step 10: Get weekly analytics
+        if not self.test_get_weekly_analytics():
+            return False
+        
+        # Step 11: Get screen time summary
+        if not self.test_get_screen_time_summary():
+            return False
+        
+        # Step 12: Create task
+        if not self.test_create_task():
+            return False
+        
+        # Step 13: Complete task
+        if not self.test_complete_task():
+            return False
+        
+        # Step 14: Approve task
+        if not self.test_approve_task():
+            return False
+        
+        # Step 15: Get child rewards
+        if not self.test_get_child_rewards():
+            return False
+        
+        # Step 16: Redeem time
+        if not self.test_redeem_time():
+            return False
+        
+        print("\n" + "="*60)
+        print("✅ INTEGRATION FLOW COMPLETED SUCCESSFULLY!")
+        print("="*60)
+        return True
+    
+    def run_all_tests(self):
+        """Run all backend API tests"""
+        print("Starting Screen Time Parental Control API Tests")
+        print("Backend URL:", self.base_url)
+        print("="*60)
+        
+        try:
+            success = self.test_integration_flow()
+            
+            if success:
+                print("\n🎉 ALL TESTS PASSED! Backend API is working correctly.")
+            else:
+                print("\n❌ SOME TESTS FAILED! Check the details above.")
+            
+            return success
+            
+        except Exception as e:
+            print(f"\n💥 CRITICAL ERROR: {str(e)}")
+            return False
+
+def main():
+    """Main test execution"""
+    tester = ScreenTimeAPITester()
+    return tester.run_all_tests()
+
+if __name__ == "__main__":
+    success = main()
+    exit(0 if success else 1)
