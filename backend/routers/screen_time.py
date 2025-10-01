@@ -177,9 +177,14 @@ def create_screen_time_router(db: AsyncIOMotorDatabase, get_current_user):
         last_week_start = week_start - timedelta(days=7)
         last_week_end = week_start - timedelta(days=1)
         
+        today_datetime = datetime.combine(today, datetime.min.time())
+        week_start_datetime = datetime.combine(week_start, datetime.min.time())
+        last_week_start_datetime = datetime.combine(last_week_start, datetime.min.time())
+        last_week_end_datetime = datetime.combine(last_week_end, datetime.min.time())
+        
         # Today's usage
         today_cursor = db.screen_time.aggregate([
-            {"$match": {"child_id": ObjectId(child_id), "date": today}},
+            {"$match": {"child_id": ObjectId(child_id), "date": today_datetime}},
             {"$group": {"_id": None, "total_minutes": {"$sum": "$minutes_used"}}}
         ])
         today_minutes = 0
