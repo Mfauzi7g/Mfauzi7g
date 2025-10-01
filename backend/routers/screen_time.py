@@ -10,7 +10,7 @@ class AppUsage(BaseModel):
     name: str
     category: str
     time_spent: Dict[str, int]  # {"hours": 1, "minutes": 30}
-    limit: Dict[str, int] = None  # {"hours": 2, "minutes": 0}
+    limit: Optional[Dict[str, int]] = None  # {"hours": 2, "minutes": 0}
     status: str  # "within_limit", "over_limit", "always_allowed"
 
 class WeeklyData(BaseModel):
