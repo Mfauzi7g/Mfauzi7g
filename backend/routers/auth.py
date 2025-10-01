@@ -10,7 +10,6 @@ import os
 from typing import Optional
 
 # Security setup
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
 SECRET_KEY = os.getenv("JWT_SECRET", "your-secret-key-here")
 ALGORITHM = "HS256"
