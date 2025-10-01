@@ -4,10 +4,12 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from './components/ui/sonner';
 import { toast } from 'sonner';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { DeviceProvider } from './contexts/DeviceContext';
 import AuthPage from './components/AuthPage';
 import Sidebar from './components/Sidebar';
 import Overview from './components/Overview';
 import TaskManager from './components/TaskManager';
+import DeviceControl from './components/DeviceControl';
 import SubscriptionModal from './components/SubscriptionModal';
 import { familyAPI, screenTimeAPI } from './services/api';
 
