@@ -43,7 +43,7 @@ const DeviceControl = ({ selectedChild, onUpdate }) => {
     connectedDevices,
     generatePairingCode,
     getDeviceStatus,
-    setAppLimits,
+    setAppLimits: setDeviceAppLimits,
     setDowntime,
     emergencyUnlock
   } = useDevice();
