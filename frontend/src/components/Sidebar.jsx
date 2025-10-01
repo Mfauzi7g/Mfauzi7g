@@ -11,7 +11,8 @@ import {
   Settings, 
   Crown,
   Users,
-  Gift
+  Gift,
+  Radio
 } from 'lucide-react';
 import { mockSubscriptionData } from '../data/mock';
 
