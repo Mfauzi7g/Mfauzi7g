@@ -20,6 +20,7 @@ const Sidebar = ({ selectedChild, children, onSelectChild, activeTab, onTabChang
   const menuItems = [
     { id: 'overview', label: 'Overview', icon: BarChart3 },
     { id: 'rewards', label: 'Tasks & Rewards', icon: Gift },
+    { id: 'device-control', label: 'Device Control', icon: Radio },
     { id: 'screen-time', label: 'Screen Time', icon: Clock },
     { id: 'app-limits', label: 'App Limits', icon: Smartphone },
     { id: 'downtime', label: 'Downtime', icon: Shield },
