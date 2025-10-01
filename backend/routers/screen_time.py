@@ -49,9 +49,10 @@ def create_screen_time_router(db: AsyncIOMotorDatabase, get_current_user):
         
         # Get today's usage
         today = date.today()
+        today_datetime = datetime.combine(today, datetime.min.time())
         usage_cursor = db.screen_time.find({
             "child_id": ObjectId(child_id),
-            "date": today
+            "date": today_datetime
         })
         
         # Group by app name
