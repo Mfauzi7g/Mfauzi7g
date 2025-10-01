@@ -193,7 +193,7 @@ def create_screen_time_router(db: AsyncIOMotorDatabase, get_current_user):
         
         # This week's usage
         week_cursor = db.screen_time.aggregate([
-            {"$match": {"child_id": ObjectId(child_id), "date": {"$gte": week_start, "$lte": today}}},
+            {"$match": {"child_id": ObjectId(child_id), "date": {"$gte": week_start_datetime, "$lte": today_datetime}}},
             {"$group": {"_id": None, "total_minutes": {"$sum": "$minutes_used"}}}
         ])
         week_minutes = 0
@@ -202,7 +202,7 @@ def create_screen_time_router(db: AsyncIOMotorDatabase, get_current_user):
         
         # Last week's usage
         last_week_cursor = db.screen_time.aggregate([
-            {"$match": {"child_id": ObjectId(child_id), "date": {"$gte": last_week_start, "$lte": last_week_end}}},
+            {"$match": {"child_id": ObjectId(child_id), "date": {"$gte": last_week_start_datetime, "$lte": last_week_end_datetime}}},
             {"$group": {"_id": None, "total_minutes": {"$sum": "$minutes_used"}}}
         ])
         last_week_minutes = 0
