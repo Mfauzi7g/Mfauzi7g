@@ -70,7 +70,7 @@ const AuthPage = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && (
               <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
+                <Label htmlFor="name">{t('auth.full_name')}</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <Input
@@ -81,14 +81,14 @@ const AuthPage = () => {
                     value={formData.name}
                     onChange={handleInputChange}
                     className="pl-10"
-                    placeholder="Enter your full name"
+                    placeholder={t('auth.enter_full_name')}
                   />
                 </div>
               </div>
             )}
             
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('auth.email')}</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <Input
@@ -99,13 +99,13 @@ const AuthPage = () => {
                   value={formData.email}
                   onChange={handleInputChange}
                   className="pl-10"
-                  placeholder="Enter your email"
+                  placeholder={t('auth.enter_email')}
                 />
               </div>
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t('auth.password')}</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <Input
@@ -116,7 +116,7 @@ const AuthPage = () => {
                   value={formData.password}
                   onChange={handleInputChange}
                   className="pl-10 pr-10"
-                  placeholder={isLogin ? 'Enter your password' : 'Create a password (min 6 chars)'}
+                  placeholder={isLogin ? t('auth.enter_password') : t('auth.create_password')}
                   minLength={!isLogin ? 6 : undefined}
                 />
                 <button
