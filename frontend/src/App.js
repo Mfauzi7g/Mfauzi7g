@@ -218,6 +218,7 @@ const Dashboard = () => {
         isOpen={showUpgradeModal}
         onClose={() => setShowUpgradeModal(false)}
         onSubscribe={handleSubscribe}
+        childrenCount={children.length}
       />
 
       <Toaster position="top-right" />
