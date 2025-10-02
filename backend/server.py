@@ -36,6 +36,7 @@ family_router = create_family_router(db, get_current_user)
 screen_time_router = create_screen_time_router(db, get_current_user)
 rewards_router = create_rewards_router(db, get_current_user)
 device_control_router = create_device_control_router(db, get_current_user)
+chat_router = create_chat_router(db, get_current_user)
 
 # Health check endpoint
 @api_router.get("/")
