@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Test the complete Screen Time parental control app with reward system functionality including authentication, family management, overview dashboard, rewards system, subscription modal, and navigation."
+user_problem_statement: "Enhance Screen Time parental control app with multi-language support (Arabic, English, French, Spanish, Dutch) and family sharing functionality. Also address companion app deployment."
 
 frontend:
   - task: "Authentication Flow"
