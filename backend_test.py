@@ -951,6 +951,9 @@ class ScreenTimeAPITester:
     def test_session_check_invalid(self):
         """Test session check with invalid session"""
         try:
+            # Clear any existing session first
+            self.session.cookies.clear()
+            
             headers = {"Authorization": "Bearer invalid_session_token_12345"}
             response = self.make_request("GET", "/social-auth/session", headers=headers)
             # Should fail with 401
