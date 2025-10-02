@@ -1174,12 +1174,18 @@ class ScreenTimeAPITester:
             self.test_logout_after_session_cleared
         ]
         
-        # Test compatibility
+        # Test compatibility and security
         compatibility_tests = [
             self.test_existing_auth_compatibility
         ]
         
-        all_tests = google_tests + apple_tests + session_tests + compatibility_tests
+        security_tests = [
+            self.test_jwt_token_validation,
+            self.test_cookie_security_settings,
+            self.test_session_expiration_handling
+        ]
+        
+        all_tests = google_tests + apple_tests + session_tests + compatibility_tests + security_tests
         
         failed_tests = []
         for test in all_tests:
