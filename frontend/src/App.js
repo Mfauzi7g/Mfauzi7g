@@ -219,6 +219,7 @@ const Dashboard = () => {
       
       <div className="flex-1 overflow-y-auto">
         <div className="p-8">
+          <WebSocketStatus />
           {renderContent()}
         </div>
       </div>
