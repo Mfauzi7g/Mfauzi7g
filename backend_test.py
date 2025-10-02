@@ -1273,6 +1273,267 @@ class ScreenTimeAPITester:
         print("="*60)
         return True
     
+    # ==================== WEBSOCKET CONNECTION DEBUGGING ====================
+    
+    def test_websocket_server_accessibility(self):
+        """Test if WebSocket server is accessible"""
+        try:
+            import socketio
+            
+            # Create a Socket.IO client
+            sio = socketio.SimpleClient()
+            
+            # Try to connect to the WebSocket server
+            websocket_url = self.base_url.replace('/api', '').replace('https://', 'wss://')
+            
+            try:
+                # Attempt connection with timeout
+                sio.connect(websocket_url, wait_timeout=10)
+                
+                # If we get here, connection was successful
+                details = f"WebSocket connection successful to {websocket_url}"
+                success = True
+                
+                # Test basic communication
+                sio.emit('test_message', {'message': 'Hello from test client'})
+                
+                # Wait for response
+                try:
+                    response = sio.receive(timeout=5)
+                    details += f", Received response: {response}"
+                except:
+                    details += ", No response received (but connection works)"
+                
+                sio.disconnect()
+                
+            except Exception as conn_error:
+                details = f"WebSocket connection failed: {str(conn_error)}"
+                success = False
+            
+            self.log_test("WebSocket Server Accessibility", success, details)
+            return success
+            
+        except ImportError:
+            self.log_test("WebSocket Server Accessibility", False, "python-socketio not available for testing")
+            return False
+        except Exception as e:
+            self.log_test("WebSocket Server Accessibility", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_websocket_cors_configuration(self):
+        """Test WebSocket CORS configuration"""
+        try:
+            # Test CORS preflight for WebSocket upgrade
+            import requests
+            
+            websocket_url = self.base_url.replace('/api', '')
+            
+            # Test CORS headers
+            headers = {
+                'Origin': 'https://screentime-parent.preview.emergentagent.com',
+                'Access-Control-Request-Method': 'GET',
+                'Access-Control-Request-Headers': 'upgrade,connection,sec-websocket-key,sec-websocket-version'
+            }
+            
+            response = requests.options(websocket_url, headers=headers)
+            
+            cors_headers = {
+                'access-control-allow-origin': response.headers.get('access-control-allow-origin'),
+                'access-control-allow-methods': response.headers.get('access-control-allow-methods'),
+                'access-control-allow-headers': response.headers.get('access-control-allow-headers')
+            }
+            
+            success = any(cors_headers.values())
+            details = f"CORS headers: {cors_headers}"
+            
+            self.log_test("WebSocket CORS Configuration", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("WebSocket CORS Configuration", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_device_pairing_validation(self):
+        """Test device pairing code validation logic"""
+        if not self.child_id:
+            self.log_test("Device Pairing Validation", False, "No child ID available")
+            return False
+        
+        try:
+            # Step 1: Generate pairing code
+            response = self.make_request("POST", f"/device-control/pairing-code/{self.child_id}")
+            
+            if response.status_code != 200:
+                self.log_test("Device Pairing Validation", False, f"Failed to generate pairing code: {response.status_code}")
+                return False
+            
+            pairing_data = response.json()
+            pairing_code = pairing_data.get('code')
+            
+            # Step 2: Test pairing with valid code
+            device_data = {
+                "pairing_code": pairing_code,
+                "device_name": "Emma's Test Device",
+                "platform": "ios",
+                "device_identifier": f"test_device_{pairing_code}",
+                "app_version": "1.0.0"
+            }
+            
+            pair_response = self.make_request("POST", "/device-control/pair-device", device_data)
+            success = pair_response.status_code == 200
+            
+            if success:
+                pair_result = pair_response.json()
+                details = f"Device paired successfully: {pair_result.get('device_id')}, Status: {pair_result.get('status')}"
+            else:
+                details = f"Device pairing failed: Status {pair_response.status_code}, Response: {pair_response.text}"
+            
+            self.log_test("Device Pairing Validation", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Device Pairing Validation", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_websocket_event_handling(self):
+        """Test WebSocket event emission and reception"""
+        try:
+            import socketio
+            import time
+            
+            # Create Socket.IO client
+            sio = socketio.SimpleClient()
+            websocket_url = self.base_url.replace('/api', '').replace('https://', 'wss://')
+            
+            try:
+                # Connect to WebSocket server
+                sio.connect(websocket_url, wait_timeout=10)
+                
+                # Test child pairing event
+                pairing_event_data = {
+                    'child_id': self.child_id,
+                    'device_id': 'test_device_123',
+                    'device_name': 'Test Device'
+                }
+                
+                sio.emit('child_pairing', pairing_event_data)
+                
+                # Test device registration event
+                registration_data = {
+                    'device_id': 'test_device_123',
+                    'child_id': self.child_id
+                }
+                
+                sio.emit('device_register', registration_data)
+                
+                # Wait for responses
+                time.sleep(2)
+                
+                # Test parent command sending
+                command_data = {
+                    'command': 'set_app_limit',
+                    'target_device': 'test_device_123',
+                    'parameters': {'app': 'YouTube', 'limit_minutes': 60}
+                }
+                
+                sio.emit('parent_command', command_data)
+                
+                sio.disconnect()
+                
+                details = "WebSocket events sent successfully (child_pairing, device_register, parent_command)"
+                success = True
+                
+            except Exception as ws_error:
+                details = f"WebSocket event handling failed: {str(ws_error)}"
+                success = False
+            
+            self.log_test("WebSocket Event Handling", success, details)
+            return success
+            
+        except ImportError:
+            self.log_test("WebSocket Event Handling", False, "python-socketio not available")
+            return False
+        except Exception as e:
+            self.log_test("WebSocket Event Handling", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_database_device_relationships(self):
+        """Test database storage of device relationships"""
+        if not self.child_id:
+            self.log_test("Database Device Relationships", False, "No child ID available")
+            return False
+        
+        try:
+            # Get child devices to check database storage
+            response = self.make_request("GET", f"/device-control/devices/{self.child_id}")
+            success = response.status_code == 200
+            
+            if success:
+                devices = response.json()
+                details = f"Retrieved {len(devices)} devices from database"
+                
+                if devices:
+                    device = devices[0]
+                    details += f", First device: {device.get('device_name')} ({device.get('platform')}) - {device.get('status')}"
+                    
+                    # Check if device has proper parent-child relationship
+                    if device.get('child_id') == self.child_id:
+                        details += ", Parent-child relationship correctly stored"
+                    else:
+                        details += ", WARNING: Parent-child relationship issue"
+                        success = False
+            else:
+                details = f"Failed to retrieve devices: Status {response.status_code}"
+            
+            self.log_test("Database Device Relationships", success, details)
+            return success
+            
+        except Exception as e:
+            self.log_test("Database Device Relationships", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_websocket_connection_debugging(self):
+        """Comprehensive WebSocket connection debugging"""
+        print("\n" + "="*70)
+        print("WEBSOCKET CONNECTION DEBUGGING FOR PARENT-CHILD COMMUNICATION")
+        print("="*70)
+        
+        # Test WebSocket server accessibility
+        websocket_tests = [
+            self.test_websocket_server_accessibility,
+            self.test_websocket_cors_configuration,
+            self.test_websocket_event_handling
+        ]
+        
+        # Test device control APIs
+        device_control_tests = [
+            self.test_generate_pairing_code,
+            self.test_device_pairing_validation,
+            self.test_get_child_devices,
+            self.test_get_device_status
+        ]
+        
+        # Test database integration
+        database_tests = [
+            self.test_database_device_relationships
+        ]
+        
+        all_tests = websocket_tests + device_control_tests + database_tests
+        
+        failed_tests = []
+        for test in all_tests:
+            if not test():
+                failed_tests.append(test.__name__)
+        
+        if not failed_tests:
+            print("✅ WEBSOCKET CONNECTION DEBUGGING COMPLETED - ALL TESTS PASSED!")
+            return True
+        else:
+            print(f"❌ WEBSOCKET CONNECTION ISSUES FOUND:")
+            for failed_test in failed_tests:
+                print(f"   - {failed_test}")
+            return False
+
     def run_all_tests(self):
         """Run all backend API tests"""
         print("Starting Screen Time Parental Control API Tests")
@@ -1287,6 +1548,9 @@ class ScreenTimeAPITester:
                 print("\n❌ CORE TESTS FAILED! Skipping additional tests.")
                 return False
             
+            # Run WebSocket connection debugging (PRIORITY TEST)
+            websocket_success = self.test_websocket_connection_debugging()
+            
             # Run social authentication tests (NEW FEATURE)
             social_auth_success = self.test_social_auth_flow()
             
@@ -1297,17 +1561,19 @@ class ScreenTimeAPITester:
             chat_device_success = self.test_chat_and_device_flow()
             
             # Overall success
-            all_success = core_success and social_auth_success and family_sharing_success and chat_device_success
+            all_success = core_success and websocket_success and social_auth_success and family_sharing_success and chat_device_success
             
             if all_success:
                 print("\n🎉 ALL TESTS PASSED! Backend API is working correctly.")
                 print("✅ Core functionality: WORKING")
+                print("✅ WebSocket connections: WORKING")
                 print("✅ Social authentication: WORKING")
                 print("✅ Family sharing: WORKING") 
                 print("✅ Chat & device control: WORKING")
             else:
                 print("\n❌ SOME TESTS FAILED! Check the details above.")
                 print(f"✅ Core functionality: {'WORKING' if core_success else 'FAILED'}")
+                print(f"{'✅' if websocket_success else '❌'} WebSocket connections: {'WORKING' if websocket_success else 'FAILED'}")
                 print(f"{'✅' if social_auth_success else '❌'} Social authentication: {'WORKING' if social_auth_success else 'FAILED'}")
                 print(f"{'✅' if family_sharing_success else '❌'} Family sharing: {'WORKING' if family_sharing_success else 'FAILED'}")
                 print(f"{'✅' if chat_device_success else '❌'} Chat & device control: {'WORKING' if chat_device_success else 'FAILED'}")
