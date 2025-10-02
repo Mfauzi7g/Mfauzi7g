@@ -137,10 +137,10 @@ const AuthPage = () => {
               {loading ? (
                 <div className="flex items-center space-x-2">
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <span>{isLogin ? 'Signing In...' : 'Creating Account...'}</span>
+                  <span>{isLogin ? t('auth.signing_in') : t('auth.creating_account')}</span>
                 </div>
               ) : (
-                isLogin ? 'Sign In' : 'Create Account'
+                isLogin ? t('auth.sign_in') : t('auth.create_account_btn')
               )}
             </Button>
           </form>
