@@ -345,6 +345,18 @@
                 updateConnectionStatus(false);
                 showNotification('🔴 Disconnected from parent', 'error');
             });
+            
+            socket.on('connect_error', (error) => {
+                console.error('Socket connection failed:', error);
+                showNotification('❌ Connection failed - WebSocket not supported on this deployment', 'error');
+                showNotification('ℹ️ Real-time features require infrastructure configuration', 'info');
+            });
+            
+            } catch (error) {
+                console.error('Socket.IO initialization failed:', error);
+                showNotification('❌ Real-time connection unavailable', 'error');
+                showNotification('ℹ️ Demo mode - WebSocket features disabled', 'info');
+            }
         }
         
         function handleDeviceCommand(command) {
