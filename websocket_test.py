@@ -303,7 +303,7 @@ class WebSocketTester:
             # Try to connect
             try:
                 await asyncio.wait_for(
-                    self.child_sio.connect(WEBSOCKET_URL),
+                    self.child_sio.connect(f"{WEBSOCKET_URL}/socket.io"),
                     timeout=10.0
                 )
                 
