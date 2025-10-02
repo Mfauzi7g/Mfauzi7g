@@ -933,19 +933,22 @@ class ScreenTimeAPITester:
     def test_session_check_valid(self):
         """Test session check with valid session"""
         try:
-            # We need to get a session_token from Apple auth first
-            # The Apple auth should have set cookies, but we need to extract the session_token
-            # For testing purposes, let's try to get session without token first to see behavior
-            response = self.make_request("GET", "/social-auth/session")
+            # Use session token from Apple auth if available
+            if self.session_token:
+                headers = {"Authorization": f"Bearer {self.session_token}"}
+                response = self.make_request("GET", "/social-auth/session", headers=headers)
+            else:
+                # Try with cookies from Apple auth
+                response = self.make_request("GET", "/social-auth/session")
             
-            # If we have a valid session from Apple auth cookies, this should work
+            # If we have a valid session, this should work
             if response.status_code == 200:
                 data = response.json()
                 details = f"Session valid: {data.get('user', {}).get('email')} authenticated via {data.get('user', {}).get('auth_provider')}"
                 success = True
             else:
-                # If no valid session, that's also expected behavior
-                details = f"No valid session found: Status {response.status_code}"
+                # If no valid session, check if it's the expected 401
+                details = f"Session check result: Status {response.status_code}"
                 success = response.status_code == 401
             
             self.log_test("Session Check Valid", success, details)
