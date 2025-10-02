@@ -11,7 +11,7 @@ from datetime import datetime, date
 from typing import Dict, Any
 
 # Get backend URL from environment
-BACKEND_URL = "https://safeweb-kids-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://screentime-parent.preview.emergentagent.com/api"
 
 class ScreenTimeAPITester:
     def __init__(self):
