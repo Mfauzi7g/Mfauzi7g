@@ -23,7 +23,9 @@ export const AuthProvider = ({ children }) => {
       
       if (token && savedUser) {
         try {
-          const userData = await authAPI.getCurrentUser();
+          // Don't call API on init, just use stored user data to prevent logout
+          const userData = JSON.parse(savedUser);
+          console.log('Restoring user from localStorage:', userData);
           setUser(userData);
           setIsAuthenticated(true);
         } catch (error) {
