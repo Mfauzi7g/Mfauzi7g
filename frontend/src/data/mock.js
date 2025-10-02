@@ -146,30 +146,36 @@ export const mockSubscriptionData = {
   trialEndsAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
   subscriptionPlans: [
     {
-      id: 'monthly',
+      id: 'monthly_per_child',
       name: 'Monthly Plan',
       price: 4.99,
       interval: 'month',
+      per_child: true,
       features: [
-        'Unlimited children',
-        'App time limits',
+        'Complete screen time control',
+        'Real-time app blocking',
+        'Task & reward system',
+        'Family chat communication',
         'Downtime scheduling',
-        'Content & privacy restrictions',
-        'Real-time notifications',
-        'Weekly reports'
+        'Emergency unlock controls',
+        'Detailed usage analytics'
       ]
     },
     {
-      id: 'yearly',
+      id: 'yearly_per_child',
       name: 'Yearly Plan',
       price: 49.99,
       interval: 'year',
+      per_child: true,
       savings: '17% OFF',
       features: [
-        'Everything in Monthly',
-        'Priority support',
-        'Advanced analytics',
-        'Family calendar integration'
+        'Everything in Monthly Plan',
+        'Priority customer support',
+        'Advanced behavioral analytics',
+        'Custom task categories',
+        'Family calendar integration',
+        'Export usage reports',
+        'Multiple device support per child'
       ]
     }
   ]
