@@ -3,7 +3,6 @@ from typing import List, Optional
 from pydantic import BaseModel
 import uuid
 from datetime import datetime, timezone
-from ..server import db
 
 router = APIRouter(prefix="/api/family-sharing", tags=["family-sharing"])
 
