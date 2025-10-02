@@ -16,6 +16,7 @@ const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [socialLoading, setSocialLoading] = useState({ google: false, apple: false });
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -23,6 +24,39 @@ const AuthPage = () => {
   });
 
   const { login, register } = useAuth();
+
+  // Check for existing session on component mount
+  useEffect(() => {
+    checkExistingSession();
+    
+    // Check for session_id in URL fragment (from Emergent Auth)
+    const fragment = window.location.hash.substring(1);
+    const params = new URLSearchParams(fragment);
+    const sessionId = params.get('session_id');
+    
+    if (sessionId) {
+      setLoading(true);
+      handleGoogleAuthCallback(sessionId);
+      // Clean URL fragment
+      window.history.replaceState(null, null, window.location.pathname);
+    }
+  }, []);
+
+  const checkExistingSession = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/social-auth/session`, {
+        withCredentials: true
+      });
+      
+      if (response.data.authenticated) {
+        // User is already authenticated, redirect to dashboard
+        login(response.data.user, 'existing_session');
+      }
+    } catch (error) {
+      // No existing session, continue with login page
+      console.log('No existing session found');
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
