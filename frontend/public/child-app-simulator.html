@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Child Device Simulator - Screen Time</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .device-simulator {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .device-header {
+            margin-bottom: 30px;
+        }
+        
+        .device-icon {
+            background: #4F46E5;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: white;
+            font-size: 24px;
+        }
+        
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-weight: 500;
+        }
+        
+        .status.disconnected {
+            background: #FEF2F2;
+            color: #DC2626;
+            border: 1px solid #FECACA;
+        }
+        
+        .status.connected {
+            background: #F0FDF4;
+            color: #16A34A;
+            border: 1px solid #BBF7D0;
+        }
+        
+        .pairing-form {
+            margin: 25px 0;
+        }
+        
+        .input-group {
+            margin: 15px 0;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #E5E7EB;
+            border-radius: 10px;
+            font-size: 16px;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: #4F46E5;
+        }
+        
+        .btn {
+            background: #4F46E5;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            margin: 10px 0;
+        }
+        
+        .btn:hover {
+            background: #3730A3;
+        }
+        
+        .btn:disabled {
+            background: #9CA3AF;
+            cursor: not-allowed;
+        }
+        
+        .notifications {
+            margin: 20px 0;
+        }
+        
+        .notification {
+            background: #FEF3C7;
+            border: 1px solid #F59E0B;
+            color: #92400E;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .notification.emergency {
+            background: #FEE2E2;
+            border-color: #EF4444;
+            color: #DC2626;
+        }
+        
+        .app-limits {
+            background: #F3F4F6;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .app-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #E5E7EB;
+        }
+        
+        .app-item:last-child {
+            border-bottom: none;
+        }
+        
+        .device-locked {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            z-index: 1000;
+        }
+        
+        .lock-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .chat-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #F9FAFB;
+            border-radius: 10px;
+        }
+        
+        .messages {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+        
+        .message {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 10px;
+            background: white;
+            text-align: left;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .message.from-parent {
+            background: #EFF6FF;
+            border-left: 4px solid #3B82F6;
+        }
+        
+        .quick-responses {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .quick-btn {
+            padding: 10px;
+            background: #F3F4F6;
+            border: 1px solid #D1D5DB;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .quick-btn:hover {
+            background: #E5E7EB;
+        }
+    </style>
+</head>
+<body>
+    <div class="device-simulator">
+        <div class="device-header">
+            <div class="device-icon">📱</div>
+            <h2>Child Device Simulator</h2>
+            <p>Screen Time Child App</p>
+        </div>
+        
+        <div class="status disconnected" id="connectionStatus">
+            🔴 Not Connected to Parent
+        </div>
+        
+        <div class="pairing-form" id="pairingForm">
+            <h3>Pair with Parent Device</h3>
+            <div class="input-group">
+                <input type="text" id="pairingCode" placeholder="Enter 6-digit code" maxlength="6">
+            </div>
+            <button class="btn" onclick="pairDevice()">Connect to Parent</button>
+        </div>
+        
+        <div class="notifications" id="notifications"></div>
+        
+        <div class="app-limits" id="appLimits" style="display: none;">
+            <h4>📱 App Limits</h4>
+            <div id="appList"></div>
+        </div>
+        
+        <div class="chat-section" id="chatSection" style="display: none;">
+            <h4>💬 Family Chat</h4>
+            <div class="messages" id="messages"></div>
+            <div class="quick-responses">
+                <button class="quick-btn" onclick="sendQuickResponse('👍')">👍</button>
+                <button class="quick-btn" onclick="sendQuickResponse('❤️')">❤️</button>
+                <button class="quick-btn" onclick="sendQuickResponse('OK')">OK</button>
+                <button class="quick-btn" onclick="sendQuickResponse('Help!')">Help!</button>
+            </div>
+        </div>
+        
+        <div class="device-locked" id="deviceLocked">
+            <div class="lock-icon">🔒</div>
+            <h2>Device Locked by Parent</h2>
+            <p>Contact your parent to unlock</p>
+            <button class="btn" onclick="requestEmergencyUnlock()" style="margin-top: 30px; max-width: 200px;">
+                🚨 Emergency Unlock
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let socket = null;
+        let isConnected = false;
+        let childId = 'simulator-' + Math.random().toString(36).substr(2, 9);
+        
+        // Get backend URL from environment or use localhost
+        const BACKEND_URL = window.location.origin.replace(':3000', ':8001') || 'http://localhost:8001';
+        
+        function pairDevice() {
+            const pairingCode = document.getElementById('pairingCode').value;
+            if (pairingCode.length !== 6) {
+                showNotification('Please enter a 6-digit pairing code', 'error');
+                return;
+            }
+            
+            // Initialize socket connection
+            socket = io(BACKEND_URL);
+            
+            socket.on('connect', () => {
+                console.log('Connected to parent dashboard');
+                
+                // Send pairing request
+                socket.emit('child_pairing', {
+                    child_id: childId,
+                    pairing_code: pairingCode,
+                    device_info: {
+                        device_name: 'Child Simulator',
+                        os: 'Web',
+                        app_version: '1.0.0'
+                    }
+                });
+            });
+            
+            socket.on('pairing_success', (data) => {
+                isConnected = true;
+                updateConnectionStatus(true);
+                showNotification('✅ Successfully connected to parent!', 'success');
+                document.getElementById('pairingForm').style.display = 'none';
+                document.getElementById('appLimits').style.display = 'block';
+                document.getElementById('chatSection').style.display = 'block';
+            });
+            
+            socket.on('pairing_failed', (data) => {
+                showNotification('❌ Pairing failed: ' + data.reason, 'error');
+            });
+            
+            socket.on('device_command', (command) => {
+                handleDeviceCommand(command);
+            });
+            
+            socket.on('parent_message', (message) => {
+                addMessage(message, 'parent');
+                showNotification('💬 New message from parent', 'info');
+            });
+            
+            socket.on('app_limit_update', (limits) => {
+                updateAppLimits(limits);
+                showNotification('📱 App limits updated by parent', 'info');
+            });
+            
+            socket.on('disconnect', () => {
+                isConnected = false;
+                updateConnectionStatus(false);
+                showNotification('🔴 Disconnected from parent', 'error');
+            });
+        }
+        
+        function handleDeviceCommand(command) {
+            console.log('Received command:', command);
+            
+            switch (command.type) {
+                case 'lock_device':
+                    lockDevice(command.message || 'Device locked by parent');
+                    break;
+                case 'unlock_device':
+                    unlockDevice();
+                    break;
+                case 'set_app_limit':
+                    showNotification(`⏰ ${command.app_name} limited to ${command.limit} minutes`, 'info');
+                    break;
+                case 'emergency_unlock_granted':
+                    unlockDevice();
+                    showNotification('🚨 Emergency unlock granted!', 'success');
+                    break;
+                default:
+                    showNotification('📞 Command received: ' + command.type, 'info');
+            }
+        }
+        
+        function lockDevice(message) {
+            document.getElementById('deviceLocked').style.display = 'flex';
+            showNotification('🔒 Device locked: ' + message, 'warning');
+        }
+        
+        function unlockDevice() {
+            document.getElementById('deviceLocked').style.display = 'none';
+            showNotification('🔓 Device unlocked', 'success');
+        }
+        
+        function requestEmergencyUnlock() {
+            if (socket && isConnected) {
+                socket.emit('emergency_unlock_request', {
+                    child_id: childId,
+                    reason: 'Emergency situation - need immediate access'
+                });
+                showNotification('🚨 Emergency unlock requested...', 'warning');
+            }
+        }
+        
+        function sendQuickResponse(response) {
+            if (socket && isConnected) {
+                const message = {
+                    child_id: childId,
+                    message: response,
+                    timestamp: new Date().toISOString()
+                };
+                socket.emit('child_message', message);
+                addMessage(message, 'child');
+            }
+        }
+        
+        function addMessage(message, sender) {
+            const messagesDiv = document.getElementById('messages');
+            const messageEl = document.createElement('div');
+            messageEl.className = `message ${sender === 'parent' ? 'from-parent' : ''}`;
+            messageEl.innerHTML = `
+                <div style="font-weight: 500;">${sender === 'parent' ? '👨‍👩‍👧 Parent' : '👶 You'}</div>
+                <div>${message.message || message.content}</div>
+                <small style="color: #666;">${new Date(message.timestamp).toLocaleTimeString()}</small>
+            `;
+            messagesDiv.appendChild(messageEl);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+        
+        function updateAppLimits(limits) {
+            const appListDiv = document.getElementById('appList');
+            appListDiv.innerHTML = '';
+            
+            limits.forEach(app => {
+                const appEl = document.createElement('div');
+                appEl.className = 'app-item';
+                appEl.innerHTML = `
+                    <span>${app.app_name}</span>
+                    <span style="color: #666;">${app.time_used}/${app.limit}min</span>
+                `;
+                appListDiv.appendChild(appEl);
+            });
+        }
+        
+        function updateConnectionStatus(connected) {
+            const statusEl = document.getElementById('connectionStatus');
+            if (connected) {
+                statusEl.className = 'status connected';
+                statusEl.innerHTML = '🟢 Connected to Parent Dashboard';
+            } else {
+                statusEl.className = 'status disconnected';
+                statusEl.innerHTML = '🔴 Not Connected to Parent';
+            }
+        }
+        
+        function showNotification(message, type = 'info') {
+            const notificationsDiv = document.getElementById('notifications');
+            const notification = document.createElement('div');
+            notification.className = `notification ${type === 'error' ? 'emergency' : ''}`;
+            notification.textContent = message;
+            
+            notificationsDiv.appendChild(notification);
+            
+            // Remove notification after 5 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 5000);
+        }
+        
+        // Simulate some app usage
+        function simulateAppUsage() {
+            if (isConnected && socket) {
+                const apps = ['Instagram', 'TikTok', 'YouTube', 'Games'];
+                const randomApp = apps[Math.floor(Math.random() * apps.length)];
+                const usageTime = Math.floor(Math.random() * 30) + 1;
+                
+                socket.emit('app_usage_update', {
+                    child_id: childId,
+                    app_name: randomApp,
+                    time_spent: usageTime
+                });
+            }
+        }
+        
+        // Simulate app usage every 10 seconds when connected
+        setInterval(simulateAppUsage, 10000);
+        
+        // Add some sample messages for demo
+        setTimeout(() => {
+            if (isConnected) {
+                addMessage({
+                    message: 'Welcome! You can chat with your parent here.',
+                    timestamp: new Date().toISOString()
+                }, 'parent');
+            }
+        }, 2000);
+    </script>
+</body>
+</html>
