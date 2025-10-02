@@ -1173,6 +1173,9 @@ class ScreenTimeAPITester:
                 print("\n❌ CORE TESTS FAILED! Skipping additional tests.")
                 return False
             
+            # Run social authentication tests (NEW FEATURE)
+            social_auth_success = self.test_social_auth_flow()
+            
             # Run family sharing tests (NEW FEATURE)
             family_sharing_success = self.test_family_sharing_flow()
             
@@ -1180,16 +1183,18 @@ class ScreenTimeAPITester:
             chat_device_success = self.test_chat_and_device_flow()
             
             # Overall success
-            all_success = core_success and family_sharing_success and chat_device_success
+            all_success = core_success and social_auth_success and family_sharing_success and chat_device_success
             
             if all_success:
                 print("\n🎉 ALL TESTS PASSED! Backend API is working correctly.")
                 print("✅ Core functionality: WORKING")
+                print("✅ Social authentication: WORKING")
                 print("✅ Family sharing: WORKING") 
                 print("✅ Chat & device control: WORKING")
             else:
                 print("\n❌ SOME TESTS FAILED! Check the details above.")
                 print(f"✅ Core functionality: {'WORKING' if core_success else 'FAILED'}")
+                print(f"{'✅' if social_auth_success else '❌'} Social authentication: {'WORKING' if social_auth_success else 'FAILED'}")
                 print(f"{'✅' if family_sharing_success else '❌'} Family sharing: {'WORKING' if family_sharing_success else 'FAILED'}")
                 print(f"{'✅' if chat_device_success else '❌'} Chat & device control: {'WORKING' if chat_device_success else 'FAILED'}")
             
