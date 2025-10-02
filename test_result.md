@@ -222,11 +222,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Family Chat System (NEW FEATURE)"
-    - "Per-Child Subscription Pricing (NEW FEATURE)"
+    - "All NEW features tested and working"
   stuck_tasks:
     - "Sample Screen Time Data Creation (minor issue)"
-  test_all: false
+  test_all: true
   test_priority: "high_first"
 
   - task: "Family Chat System (NEW FEATURE)"
