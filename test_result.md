@@ -228,8 +228,34 @@ test_plan:
   test_all: true
   test_priority: "high_first"
 
+  - task: "Family Chat System (NEW FEATURE)"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/FamilyChat.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "NEW FEATURE: Family Chat system implemented with chat interface, message sending, quick responses, emergency communication options. Needs comprehensive testing for Emma and Alex chat functionality."
+
+  - task: "Per-Child Subscription Pricing (NEW FEATURE)"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/SubscriptionModal.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "NEW FEATURE: Updated subscription modal with per-child pricing model. Monthly: $4.99 per child, Yearly: $49.99 per child. Shows total pricing for 2 children ($9.98 monthly, $99.98 yearly) with savings calculation. Needs testing for pricing calculator and plan selection."
+
 agent_communication:
     - agent: "testing"
       message: "Comprehensive testing completed. Fixed critical family creation bug that was preventing Emma and Alex from being created automatically. All major features now working: Authentication (registration/login), Family Management (Emma & Alex creation), Overview Dashboard (screen time stats, weekly chart), Rewards System (task creation, time bank), Subscription Modal (plan selection), and Navigation. One minor issue remains with sample screen time data creation (422 errors) but doesn't affect core functionality. App is fully functional for the requested testing scope."
     - agent: "testing"
       message: "FINAL COMPREHENSIVE TESTING COMPLETED SUCCESSFULLY (Oct 1, 2025): All requested features tested and working perfectly. Authentication flow working with user registration (testuser@demo.com created and tested). Dashboard navigation fully functional. Emma and Alex family members created automatically. Overview tab displays screen time stats correctly. Tasks & Rewards system operational with task creation dialog working. Device Control tab accessible. Family member switching between Emma and Alex working. Subscription modal opens and displays plans correctly. Responsive design verified on desktop, tablet, and mobile viewports. Only minor issues: 422 errors for sample screen time data creation (doesn't affect core functionality) and WebSocket connection warnings (doesn't impact app functionality). App is production-ready for all requested features."
+    - agent: "main"
+      message: "NEW FEATURES ADDED: Family Chat System and Per-Child Subscription Pricing. Family Chat includes message interface, quick responses, emergency communication. Subscription modal updated with per-child pricing ($4.99/month, $49.99/year per child) showing total costs for multiple children. Both features need comprehensive testing."
