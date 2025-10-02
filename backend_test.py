@@ -827,6 +827,264 @@ class ScreenTimeAPITester:
         print("✅ CHAT & DEVICE CONTROL TESTS COMPLETED!")
         return True
 
+    # ==================== SOCIAL AUTHENTICATION API TESTS ====================
+    
+    def test_google_oauth_success(self):
+        """Test successful Google OAuth authentication"""
+        try:
+            # Mock session_id for testing
+            auth_data = {
+                "session_id": "mock_google_session_123"
+            }
+            
+            response = self.make_request("POST", "/social-auth/google", auth_data)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                # Store tokens for further testing
+                self.auth_token = data.get("access_token")
+                self.user_data = data.get("user")
+                details = f"Google auth successful: {data.get('user', {}).get('email')} via {data.get('user', {}).get('auth_provider')}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("Google OAuth Success", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Google OAuth Success", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_google_oauth_invalid_session(self):
+        """Test Google OAuth with invalid session_id"""
+        try:
+            auth_data = {
+                "session_id": "invalid_session_id_12345"
+            }
+            
+            response = self.make_request("POST", "/social-auth/google", auth_data)
+            # Should fail with 400 or 500 status
+            success = response.status_code in [400, 500]
+            
+            details = f"Status: {response.status_code}, Response: {response.text[:100]}"
+            self.log_test("Google OAuth Invalid Session", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Google OAuth Invalid Session", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_apple_signin_success(self):
+        """Test successful Apple Sign In authentication"""
+        try:
+            # Mock Apple auth data
+            import time
+            timestamp = int(time.time())
+            
+            auth_data = {
+                "code": f"mock_apple_code_{timestamp}",
+                "id_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhcHBsZV91c2VyXzEyMzQ1IiwiZW1haWwiOiJ0ZXN0dXNlckBhcHBsZWlkLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpYXQiOjE2MzQ1Njc4OTAsImV4cCI6MTYzNDU3MTQ5MH0.mock_signature",
+                "state": "mock_state_123",
+                "user": {
+                    "name": {
+                        "firstName": "John",
+                        "lastName": "Apple"
+                    }
+                }
+            }
+            
+            response = self.make_request("POST", "/social-auth/apple", auth_data)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                details = f"Apple auth successful: {data.get('user', {}).get('email')} via {data.get('user', {}).get('auth_provider')}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("Apple Sign In Success", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Apple Sign In Success", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_apple_signin_malformed_token(self):
+        """Test Apple Sign In with malformed ID token"""
+        try:
+            auth_data = {
+                "code": "mock_apple_code_malformed",
+                "id_token": "malformed.jwt.token",
+                "state": "mock_state_123"
+            }
+            
+            response = self.make_request("POST", "/social-auth/apple", auth_data)
+            # Should still work due to fallback mechanism
+            success = response.status_code == 200
+            
+            details = f"Status: {response.status_code}, Response: {response.text[:100]}"
+            self.log_test("Apple Sign In Malformed Token", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Apple Sign In Malformed Token", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_session_check_valid(self):
+        """Test session check with valid session"""
+        try:
+            # Use session token from previous auth
+            if not self.auth_token:
+                self.log_test("Session Check Valid", False, "No auth token available")
+                return False
+            
+            # Set session token in headers
+            headers = {"Authorization": f"Bearer {self.auth_token}"}
+            response = self.make_request("GET", "/social-auth/session", headers=headers)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                details = f"Session valid: {data.get('user', {}).get('email')} authenticated via {data.get('user', {}).get('auth_provider')}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("Session Check Valid", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Session Check Valid", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_session_check_invalid(self):
+        """Test session check with invalid session"""
+        try:
+            headers = {"Authorization": "Bearer invalid_session_token_12345"}
+            response = self.make_request("GET", "/social-auth/session", headers=headers)
+            # Should fail with 401
+            success = response.status_code == 401
+            
+            details = f"Status: {response.status_code}, Response: {response.text[:100]}"
+            self.log_test("Session Check Invalid", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Session Check Invalid", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_session_check_no_token(self):
+        """Test session check without any token"""
+        try:
+            response = self.make_request("GET", "/social-auth/session")
+            # Should fail with 401
+            success = response.status_code == 401
+            
+            details = f"Status: {response.status_code}, Response: {response.text[:100]}"
+            self.log_test("Session Check No Token", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Session Check No Token", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_logout_success(self):
+        """Test successful logout"""
+        try:
+            response = self.make_request("POST", "/social-auth/logout")
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                details = f"Logout successful: {data.get('message')}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("Logout Success", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Logout Success", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_logout_after_session_cleared(self):
+        """Test logout after session is already cleared"""
+        try:
+            response = self.make_request("POST", "/social-auth/logout")
+            success = response.status_code == 200
+            
+            details = f"Status: {response.status_code}, Response: {response.text[:100]}"
+            self.log_test("Logout After Session Cleared", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Logout After Session Cleared", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_existing_auth_compatibility(self):
+        """Test that existing auth endpoints still work after social auth implementation"""
+        try:
+            # Test original registration endpoint
+            import time
+            timestamp = int(time.time())
+            user_data = {
+                "email": f"traditional{timestamp}@example.com",
+                "password": "securepassword123",
+                "name": "Traditional User"
+            }
+            
+            response = self.make_request("POST", "/auth/register", user_data)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                details = f"Traditional auth still works: {data.get('user', {}).get('email')}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("Existing Auth Compatibility", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Existing Auth Compatibility", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_social_auth_flow(self):
+        """Test complete social authentication functionality"""
+        print("\n" + "="*60)
+        print("TESTING SOCIAL AUTHENTICATION FUNCTIONALITY")
+        print("="*60)
+        
+        # Test Google OAuth flow
+        google_tests = [
+            self.test_google_oauth_success,
+            self.test_google_oauth_invalid_session
+        ]
+        
+        # Test Apple Sign In flow
+        apple_tests = [
+            self.test_apple_signin_success,
+            self.test_apple_signin_malformed_token
+        ]
+        
+        # Test session management
+        session_tests = [
+            self.test_session_check_valid,
+            self.test_session_check_invalid,
+            self.test_session_check_no_token,
+            self.test_logout_success,
+            self.test_logout_after_session_cleared
+        ]
+        
+        # Test compatibility
+        compatibility_tests = [
+            self.test_existing_auth_compatibility
+        ]
+        
+        all_tests = google_tests + apple_tests + session_tests + compatibility_tests
+        
+        failed_tests = []
+        for test in all_tests:
+            if not test():
+                failed_tests.append(test.__name__)
+        
+        if not failed_tests:
+            print("✅ SOCIAL AUTHENTICATION TESTS COMPLETED!")
+            return True
+        else:
+            print(f"❌ SOCIAL AUTHENTICATION TESTS FAILED: {', '.join(failed_tests)}")
+            return False
+
     def test_integration_flow(self):
         """Test complete end-to-end integration flow"""
         print("\n" + "="*60)
