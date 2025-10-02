@@ -10,6 +10,7 @@ from routers.family import create_family_router
 from routers.screen_time import create_screen_time_router
 from routers.rewards import create_rewards_router
 from routers.device_control import create_device_control_router
+from routers.chat import create_chat_router
 from dotenv import load_dotenv
 
 ROOT_DIR = Path(__file__).parent
