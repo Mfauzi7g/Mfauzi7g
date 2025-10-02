@@ -873,6 +873,9 @@ class ScreenTimeAPITester:
     def test_apple_signin_success(self):
         """Test successful Apple Sign In authentication"""
         try:
+            # Clear any existing session first
+            self.session.cookies.clear()
+            
             # Mock Apple auth data
             import time
             timestamp = int(time.time())
@@ -894,6 +897,8 @@ class ScreenTimeAPITester:
             
             if success:
                 data = response.json()
+                # Store the session token for later tests
+                self.session_token = data.get("session_token")
                 details = f"Apple auth successful: {data.get('user', {}).get('email')} via {data.get('user', {}).get('auth_provider')}"
             else:
                 details = f"Status: {response.status_code}, Response: {response.text}"
