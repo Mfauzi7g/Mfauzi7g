@@ -111,8 +111,8 @@ const Sidebar = ({ selectedChild, children, onSelectChild, activeTab, onTabChang
                             child.status === 'downtime' ? 'destructive' : 'secondary'}
                     className="text-xs"
                   >
-                    {child.status === 'active' ? 'Active' : 
-                     child.status === 'downtime' ? 'Downtime' : 'Limited'}
+                    {child.status === 'active' ? t('sidebar.active') : 
+                     child.status === 'downtime' ? t('sidebar.downtime') : t('sidebar.limited')}
                   </Badge>
                   {child.earned_minutes > 0 && (
                     <span className="text-xs text-green-600 mt-1">
