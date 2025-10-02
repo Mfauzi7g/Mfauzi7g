@@ -12,7 +12,9 @@ import TaskManager from './components/TaskManager';
 import DeviceControl from './components/DeviceControl';
 import FamilyChat from './components/FamilyChat';
 import SubscriptionModal from './components/SubscriptionModal';
+import LanguageSelector from './components/LanguageSelector';
 import { familyAPI, screenTimeAPI, chatAPI } from './services/api';
+import './i18n';
 
 const Dashboard = () => {
   const [selectedChild, setSelectedChild] = useState(null);
