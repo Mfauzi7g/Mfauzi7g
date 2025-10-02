@@ -71,15 +71,30 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const register = async (userData) => {
+  const register = async (nameOrUserData, email = null, password = null) => {
     try {
-      const response = await authAPI.register(userData);
-      const { access_token, user: newUser } = response;
+      let response, userData, accessToken;
       
-      localStorage.setItem('authToken', access_token);
-      localStorage.setItem('user', JSON.stringify(newUser));
+      if (typeof nameOrUserData === 'object') {
+        // Traditional registration with user object
+        response = await authAPI.register(nameOrUserData);
+        userData = response.user;
+        accessToken = response.access_token;
+      } else {
+        // Individual parameters
+        response = await authAPI.register({
+          name: nameOrUserData,
+          email: email,
+          password: password
+        });
+        userData = response.user;
+        accessToken = response.access_token;
+      }
       
-      setUser(newUser);
+      localStorage.setItem('authToken', accessToken);
+      localStorage.setItem('user', JSON.stringify(userData));
+      
+      setUser(userData);
       setIsAuthenticated(true);
       
       return { success: true };
