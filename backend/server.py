@@ -40,6 +40,7 @@ rewards_router = create_rewards_router(db, get_current_user)
 device_control_router = create_device_control_router(db, get_current_user)
 chat_router = create_chat_router(db, get_current_user, device_control_router.device_manager)
 family_sharing_router = create_family_sharing_router(db, get_current_user)
+social_auth_router = create_social_auth_router(db, get_current_user)
 
 # Health check endpoint
 @api_router.get("/")
