@@ -19,23 +19,23 @@ def create_family_sharing_router(db: AsyncIOMotorDatabase, get_current_user: Cal
         created_at: str = None
         expires_at: str = None
 
-class FamilyMember(BaseModel):
-    id: str = None
-    user_id: str
-    family_id: str
-    role: str = "parent"  # "parent", "co-parent", "guardian"
-    permissions: List[str] = ["view", "control"]  # "view", "control", "invite", "admin"
-    joined_at: str = None
+    class FamilyMember(BaseModel):
+        id: str = None
+        user_id: str
+        family_id: str
+        role: str = "parent"  # "parent", "co-parent", "guardian"
+        permissions: List[str] = ["view", "control"]  # "view", "control", "invite", "admin"
+        joined_at: str = None
 
-class ShareChildRequest(BaseModel):
-    child_id: str
-    shared_with_email: str
-    permissions: List[str] = ["view"]  # "view", "control"
+    class ShareChildRequest(BaseModel):
+        child_id: str
+        shared_with_email: str
+        permissions: List[str] = ["view"]  # "view", "control"
 
-class FamilySharingResponse(BaseModel):
-    success: bool
-    message: str
-    data: Optional[dict] = None
+    class FamilySharingResponse(BaseModel):
+        success: bool
+        message: str
+        data: Optional[dict] = None
 
 @router.post("/invite", response_model=FamilySharingResponse)
 async def invite_family_member(
