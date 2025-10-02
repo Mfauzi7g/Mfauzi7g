@@ -62,6 +62,7 @@ api_router.include_router(screen_time_router)
 api_router.include_router(rewards_router)
 api_router.include_router(device_control_router)
 api_router.include_router(chat_router)
+api_router.include_router(family_sharing.router)
 
 # Include the main API router in the app
 app.include_router(api_router)
