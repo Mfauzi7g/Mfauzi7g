@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }) => {
         accessToken = passwordOrToken;
         
         console.log('Social login - userData:', userData);
-        console.log('Social login - accessToken:', accessToken);
+        console.log('Social login - accessToken present:', !!accessToken);
       } else {
         // Email/password login
         const loginData = { email: emailOrUser, password: passwordOrToken };
@@ -61,19 +61,32 @@ export const AuthProvider = ({ children }) => {
         accessToken = response.access_token;
       }
       
+      // Ensure we have valid data before setting state
+      if (!userData || !userData.email) {
+        throw new Error('Invalid user data received');
+      }
+      
       if (accessToken) {
         localStorage.setItem('authToken', accessToken);
       }
       localStorage.setItem('user', JSON.stringify(userData));
       
+      // Set state synchronously to prevent race conditions
       setUser(userData);
       setIsAuthenticated(true);
       
-      console.log('Login successful, user set:', userData);
+      console.log('Login successful, user authenticated:', userData.email);
       return { success: true };
     } catch (error) {
       console.error('Login error:', error);
       console.error('Error details:', error.response?.data);
+      
+      // Clear any partial state on error
+      setUser(null);
+      setIsAuthenticated(false);
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('user');
+      
       return { 
         success: false, 
         error: error.response?.data?.detail || error.message || 'Login failed'
