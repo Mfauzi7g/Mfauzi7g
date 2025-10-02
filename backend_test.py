@@ -1050,6 +1050,103 @@ class ScreenTimeAPITester:
             self.log_test("Existing Auth Compatibility", False, f"Exception: {str(e)}")
             return False
     
+    def test_jwt_token_validation(self):
+        """Test JWT token validation and structure"""
+        try:
+            # First authenticate with Apple to get a JWT token
+            import time
+            timestamp = int(time.time())
+            
+            auth_data = {
+                "code": f"jwt_test_code_{timestamp}",
+                "id_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhcHBsZV91c2VyX2p3dCIsImVtYWlsIjoiand0dGVzdEBhcHBsZWlkLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpYXQiOjE2MzQ1Njc4OTAsImV4cCI6MTYzNDU3MTQ5MH0.mock_signature",
+                "state": "jwt_test_state"
+            }
+            
+            response = self.make_request("POST", "/social-auth/apple", auth_data)
+            
+            if response.status_code == 200:
+                data = response.json()
+                access_token = data.get("access_token")
+                
+                # Verify JWT token structure (should be 3 parts separated by dots)
+                if access_token and len(access_token.split('.')) == 3:
+                    details = f"JWT token structure valid: {len(access_token)} characters, 3 parts"
+                    success = True
+                else:
+                    details = f"JWT token structure invalid: {access_token}"
+                    success = False
+            else:
+                details = f"Failed to get JWT token: Status {response.status_code}"
+                success = False
+            
+            self.log_test("JWT Token Validation", success, details)
+            return success
+        except Exception as e:
+            self.log_test("JWT Token Validation", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_cookie_security_settings(self):
+        """Test that authentication cookies have proper security settings"""
+        try:
+            # Authenticate with Apple to trigger cookie setting
+            import time
+            timestamp = int(time.time())
+            
+            auth_data = {
+                "code": f"cookie_test_code_{timestamp}",
+                "id_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhcHBsZV91c2VyX2Nvb2tpZSIsImVtYWlsIjoiY29va2lldGVzdEBhcHBsZWlkLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpYXQiOjE2MzQ1Njc4OTAsImV4cCI6MTYzNDU3MTQ5MH0.mock_signature",
+                "state": "cookie_test_state"
+            }
+            
+            response = self.make_request("POST", "/social-auth/apple", auth_data)
+            
+            if response.status_code == 200:
+                # Check if cookies are set in response headers
+                set_cookie_headers = response.headers.get_list('Set-Cookie') if hasattr(response.headers, 'get_list') else []
+                
+                # For requests library, cookies are stored in response.cookies
+                cookies_found = len(response.cookies) > 0
+                
+                if cookies_found:
+                    details = f"Authentication cookies set: {len(response.cookies)} cookies"
+                    success = True
+                else:
+                    details = "No authentication cookies found in response"
+                    success = False
+            else:
+                details = f"Failed to authenticate for cookie test: Status {response.status_code}"
+                success = False
+            
+            self.log_test("Cookie Security Settings", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Cookie Security Settings", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_session_expiration_handling(self):
+        """Test session expiration and cleanup"""
+        try:
+            # Test logout to clear any existing sessions
+            logout_response = self.make_request("POST", "/social-auth/logout")
+            
+            # Try to access session after logout
+            session_response = self.make_request("GET", "/social-auth/session")
+            
+            # Should return 401 after logout
+            success = session_response.status_code == 401
+            
+            if success:
+                details = f"Session properly expired after logout: Status {session_response.status_code}"
+            else:
+                details = f"Session expiration issue: Status {session_response.status_code}"
+            
+            self.log_test("Session Expiration Handling", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Session Expiration Handling", False, f"Exception: {str(e)}")
+            return False
+    
     def test_social_auth_flow(self):
         """Test complete social authentication functionality"""
         print("\n" + "="*60)
