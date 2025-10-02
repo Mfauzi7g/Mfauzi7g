@@ -38,12 +38,24 @@ export const AuthProvider = ({ children }) => {
     initAuth();
   }, []);
 
-  const login = async (credentials) => {
+  const login = async (emailOrUser, passwordOrToken, type = 'email') => {
     try {
-      const response = await authAPI.login(credentials);
-      const { access_token, user: userData } = response;
+      let response, userData, accessToken;
       
-      localStorage.setItem('authToken', access_token);
+      if (type === 'social' || type === 'existing_session') {
+        // Social login or existing session - user data already provided
+        userData = emailOrUser;
+        accessToken = passwordOrToken;
+      } else {
+        // Email/password login
+        response = await authAPI.login({ email: emailOrUser, password: passwordOrToken });
+        userData = response.user;
+        accessToken = response.access_token;
+      }
+      
+      if (accessToken) {
+        localStorage.setItem('authToken', accessToken);
+      }
       localStorage.setItem('user', JSON.stringify(userData));
       
       setUser(userData);
