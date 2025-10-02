@@ -1280,11 +1280,21 @@ class ScreenTimeAPITester:
         try:
             import socketio
             
+            # First test Socket.IO polling endpoint
+            polling_url = self.base_url.replace('/api', '') + '/socket.io/?EIO=4&transport=polling'
+            polling_response = self.session.get(polling_url)
+            
+            if polling_response.status_code == 200 and polling_response.text.startswith('<!doctype html>'):
+                details = "Socket.IO endpoint returns HTML instead of Socket.IO protocol data. Kubernetes ingress not properly configured for Socket.IO routing."
+                success = False
+                self.log_test("WebSocket Server Accessibility", success, details)
+                return success
+            
             # Create a Socket.IO client
             sio = socketio.SimpleClient()
             
             # Try to connect to the WebSocket server
-            websocket_url = self.base_url.replace('/api', '').replace('https://', 'wss://')
+            websocket_url = self.base_url.replace('/api', '')
             
             try:
                 # Attempt connection with timeout
@@ -1307,7 +1317,7 @@ class ScreenTimeAPITester:
                 sio.disconnect()
                 
             except Exception as conn_error:
-                details = f"WebSocket connection failed: {str(conn_error)}"
+                details = f"WebSocket connection failed: {str(conn_error)}. Root cause: Kubernetes ingress not configured for WebSocket support."
                 success = False
             
             self.log_test("WebSocket Server Accessibility", success, details)
