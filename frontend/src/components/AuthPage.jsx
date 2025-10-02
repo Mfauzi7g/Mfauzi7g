@@ -159,14 +159,16 @@ const AuthPage = () => {
     setSocialLoading({ ...socialLoading, apple: false });
   };
 
-  // Apple Auth Configuration
+  // Apple Auth Configuration - Fixed for web applications
   const appleAuthOptions = {
-    clientId: process.env.REACT_APP_APPLE_CLIENT_ID || 'com.screentime.web',
-    scope: 'email name',
+    clientId: process.env.REACT_APP_APPLE_CLIENT_ID || 'com.example.screentime',
+    scope: 'name email',
     redirectURI: window.location.origin,
     state: 'signin-state-' + Math.random().toString(36).substring(2, 15),
     nonce: 'nonce-' + Math.random().toString(36).substring(2, 15),
-    usePopup: true
+    usePopup: true,
+    responseType: 'code id_token',
+    responseMode: 'fragment'
   };
 
   const handleInputChange = (e) => {
