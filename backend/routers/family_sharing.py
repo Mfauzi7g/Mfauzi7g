@@ -1,10 +1,12 @@
 from fastapi import APIRouter, HTTPException, Depends
-from typing import List, Optional
+from typing import List, Optional, Callable
 from pydantic import BaseModel
 import uuid
 from datetime import datetime, timezone
+from motor.motor_asyncio import AsyncIOMotorDatabase
 
-router = APIRouter(prefix="/api/family-sharing", tags=["family-sharing"])
+def create_family_sharing_router(db: AsyncIOMotorDatabase, get_current_user: Callable):
+    router = APIRouter(prefix="/family-sharing", tags=["family-sharing"])
 
 # Family sharing models
 class FamilyInvite(BaseModel):
