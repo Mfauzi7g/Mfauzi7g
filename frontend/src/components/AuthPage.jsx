@@ -32,12 +32,12 @@ const AuthPage = () => {
         : await register(formData);
 
       if (result.success) {
-        toast.success(isLogin ? 'Welcome back!' : 'Account created successfully!');
+        toast.success(isLogin ? t('auth.welcome_success') : t('auth.account_created'));
       } else {
         toast.error(result.error);
       }
     } catch (error) {
-      toast.error('Something went wrong. Please try again.');
+      toast.error(t('auth.something_wrong'));
     } finally {
       setLoading(false);
     }
