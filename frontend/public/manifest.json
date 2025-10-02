@@ -1,0 +1,51 @@
+{
+  "short_name": "Screen Time",
+  "name": "Screen Time - Parental Controls",
+  "description": "Manage your children's screen time with parental controls and family sharing",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#4F46E5",
+  "background_color": "#ffffff",
+  "orientation": "portrait",
+  "categories": ["productivity", "lifestyle", "utilities"],
+  "screenshots": [
+    {
+      "src": "screenshot1.png",
+      "sizes": "1242x2688",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Family Chat",
+      "short_name": "Chat",
+      "description": "Open family chat",
+      "url": "/chat",
+      "icons": [{"src": "logo192.png", "sizes": "192x192"}]
+    },
+    {
+      "name": "Device Control",
+      "short_name": "Control", 
+      "description": "Manage devices",
+      "url": "/control",
+      "icons": [{"src": "logo192.png", "sizes": "192x192"}]
+    }
+  ]
+}
