@@ -322,6 +322,18 @@ test_plan:
           agent: "testing"
           comment: "COMPREHENSIVE FRONTEND TESTING COMPLETED SUCCESSFULLY: ✅ SOCIAL AUTHENTICATION UI: Google 'Continue with Google' button with proper Google logo and styling (border-gray-300, hover:bg-gray-50), Apple 'Continue with Apple' button with Apple logo and dark styling (bg-black, text-white). Both buttons positioned correctly below traditional form with OR divider. ✅ BUTTON INTERACTIONS: Both buttons enabled, hover effects working, Google OAuth redirect to Emergent Auth working (https://auth.emergentagent.com/?redirect=...). ✅ TRADITIONAL FORM COMPATIBILITY: Email/password login works alongside social auth, registration toggle functional with name field appearing, social buttons visible in both login and registration modes. ✅ MULTI-LANGUAGE SUPPORT: Language selector working with all 5 languages (English, Arabic, French, Spanish, Dutch) visible in dropdown. Social buttons remain functional across all languages. ✅ RESPONSIVE DESIGN: Social buttons visible and functional on desktop (1920x1080), tablet (768x1024), and mobile (390x844) viewports. ✅ SESSION MANAGEMENT: Automatic session detection on page load working (401 responses for no existing session as expected), session management integration functional. ✅ DEMO ACCOUNT DISPLAY: Demo account info visible with proper email (demo@parent.com). ✅ ERROR HANDLING: Loading states properly configured (not visible initially as expected), session-related console logs working correctly. All 10 priority testing areas completed successfully - social authentication UI is production-ready."
 
+  - task: "WebSocket Parent-Child Communication (CRITICAL ISSUE)"
+    implemented: true
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "CRITICAL INFRASTRUCTURE ISSUE: WebSocket connections failing due to Kubernetes ingress configuration. Socket.IO server properly configured in backend, but ingress routes /socket.io/ requests to frontend instead of backend. Device control HTTP APIs working perfectly (pairing codes, device registration, status monitoring). ROOT CAUSE: Missing WebSocket support annotations in Kubernetes NGINX ingress. SOLUTION REQUIRED: Infrastructure team must add ingress annotations for WebSocket support: nginx.ingress.kubernetes.io/proxy-http-version: '1.1', nginx.ingress.kubernetes.io/proxy-set-header-upgrade: '$http_upgrade', nginx.ingress.kubernetes.io/proxy-set-header-connection: 'upgrade', nginx.ingress.kubernetes.io/proxy-read-timeout: '3600', nginx.ingress.kubernetes.io/proxy-send-timeout: '3600', nginx.ingress.kubernetes.io/enable-websocket: 'true'."
+
   - task: "Companion App Deployment (PENDING)"
     implemented: false
     working: "NA"
