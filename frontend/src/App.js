@@ -11,6 +11,7 @@ import Overview from './components/Overview';
 import TaskManager from './components/TaskManager';
 import DeviceControl from './components/DeviceControl';
 import FamilyChat from './components/FamilyChat';
+import FamilySharing from './components/FamilySharing';
 import SubscriptionModal from './components/SubscriptionModal';
 import LanguageSelector from './components/LanguageSelector';
 import { familyAPI, screenTimeAPI, chatAPI } from './services/api';
