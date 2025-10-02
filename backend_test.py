@@ -447,6 +447,331 @@ class ScreenTimeAPITester:
         except Exception as e:
             self.log_test("Redeem Time", False, f"Exception: {str(e)}")
             return False
+
+    # ==================== FAMILY SHARING API TESTS ====================
+    
+    def test_send_family_invite(self):
+        """Test sending family invitation"""
+        try:
+            invite_data = {
+                "email": "coparent@example.com",
+                "role": "co-parent"
+            }
+            
+            response = self.make_request("POST", "/family-sharing/invite", invite_data)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                details = f"Invite sent: {data.get('message')}, Invite ID: {data.get('data', {}).get('invite_id')}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("Send Family Invite", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Send Family Invite", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_get_pending_invites(self):
+        """Test getting pending family invitations"""
+        try:
+            response = self.make_request("GET", "/family-sharing/invites")
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                invites = data.get('data', {}).get('invites', [])
+                details = f"Retrieved {len(invites)} pending invites"
+                if invites:
+                    details += f", First invite: {invites[0].get('to_email')} ({invites[0].get('role')})"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("Get Pending Invites", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Get Pending Invites", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_accept_family_invite(self):
+        """Test accepting family invitation"""
+        try:
+            # Use a mock invite ID for testing
+            invite_id = "invite1"
+            response = self.make_request("POST", f"/family-sharing/accept-invite/{invite_id}")
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                details = f"Invite accepted: {data.get('message')}, Family ID: {data.get('data', {}).get('family_id')}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("Accept Family Invite", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Accept Family Invite", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_get_family_members(self):
+        """Test getting family members"""
+        try:
+            response = self.make_request("GET", "/family-sharing/family-members")
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                members = data.get('data', {}).get('members', [])
+                details = f"Retrieved {len(members)} family members"
+                if members:
+                    member = members[0]
+                    details += f", First member: {member.get('role')} with permissions {member.get('permissions')}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("Get Family Members", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Get Family Members", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_get_shared_children(self):
+        """Test getting shared children"""
+        try:
+            response = self.make_request("GET", "/family-sharing/shared-children")
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                children = data.get('data', {}).get('children', [])
+                details = f"Retrieved {len(children)} shared children"
+                if children:
+                    child = children[0]
+                    details += f", First child: {child.get('name')} (Age: {child.get('age')}) with permissions {child.get('permissions')}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("Get Shared Children", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Get Shared Children", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_share_child(self):
+        """Test sharing a child with family member"""
+        if not self.child_id:
+            self.log_test("Share Child", False, "No child ID available")
+            return False
+        
+        try:
+            share_data = {
+                "child_id": self.child_id,
+                "shared_with_email": "coparent@example.com",
+                "permissions": ["view", "control"]
+            }
+            
+            response = self.make_request("POST", "/family-sharing/share-child", share_data)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                details = f"Child shared: {data.get('message')}, Sharing ID: {data.get('data', {}).get('sharing_id')}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("Share Child", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Share Child", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_remove_family_access(self):
+        """Test removing family member access"""
+        try:
+            # Use a mock member ID for testing
+            member_id = "member2"
+            response = self.make_request("DELETE", f"/family-sharing/remove-access/{member_id}")
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                details = f"Access removed: {data.get('message')}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("Remove Family Access", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Remove Family Access", False, f"Exception: {str(e)}")
+            return False
+
+    # ==================== CHAT API TESTS ====================
+    
+    def test_get_chat_conversations(self):
+        """Test getting chat conversations"""
+        try:
+            response = self.make_request("GET", "/chat/conversations")
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                details = f"Retrieved {len(data)} conversations"
+                if data:
+                    conv = data[0]
+                    details += f", First conversation: {conv.get('child_name')} ({conv.get('unread_count')} unread)"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("Get Chat Conversations", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Get Chat Conversations", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_get_chat_messages(self):
+        """Test getting chat messages for a child"""
+        if not self.child_id:
+            self.log_test("Get Chat Messages", False, "No child ID available")
+            return False
+        
+        try:
+            response = self.make_request("GET", f"/chat/messages/{self.child_id}")
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                details = f"Retrieved {len(data)} messages"
+                if data:
+                    msg = data[0]
+                    details += f", First message: {msg.get('sender_name')} - {msg.get('content')[:50]}..."
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("Get Chat Messages", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Get Chat Messages", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_send_chat_message(self):
+        """Test sending a chat message to child"""
+        if not self.child_id:
+            self.log_test("Send Chat Message", False, "No child ID available")
+            return False
+        
+        try:
+            message_data = {
+                "child_id": self.child_id,
+                "message_type": "text",
+                "content": "Hi Emma! How is your homework going?"
+            }
+            
+            response = self.make_request("POST", "/chat/send", message_data)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                details = f"Message sent: {data.get('content')} to {data.get('conversation_id')}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("Send Chat Message", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Send Chat Message", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_get_quick_responses(self):
+        """Test getting quick response messages"""
+        try:
+            response = self.make_request("GET", "/chat/quick-responses")
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                parent_responses = data.get('parent_responses', [])
+                child_responses = data.get('child_responses', [])
+                details = f"Retrieved {len(parent_responses)} parent responses, {len(child_responses)} child responses"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("Get Quick Responses", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Get Quick Responses", False, f"Exception: {str(e)}")
+            return False
+
+    # ==================== DEVICE CONTROL API TESTS ====================
+    
+    def test_generate_pairing_code(self):
+        """Test generating device pairing code"""
+        if not self.child_id:
+            self.log_test("Generate Pairing Code", False, "No child ID available")
+            return False
+        
+        try:
+            response = self.make_request("POST", f"/device-control/pairing-code/{self.child_id}")
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                details = f"Pairing code generated: {data.get('code')} for {data.get('child_name')} (expires in {data.get('expires_in_minutes')} minutes)"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("Generate Pairing Code", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Generate Pairing Code", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_get_child_devices(self):
+        """Test getting child's devices"""
+        if not self.child_id:
+            self.log_test("Get Child Devices", False, "No child ID available")
+            return False
+        
+        try:
+            response = self.make_request("GET", f"/device-control/devices/{self.child_id}")
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                details = f"Retrieved {len(data)} devices"
+                if data:
+                    device = data[0]
+                    details += f", First device: {device.get('device_name')} ({device.get('platform')}) - {device.get('status')}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("Get Child Devices", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Get Child Devices", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_get_device_status(self):
+        """Test getting device status"""
+        if not self.child_id:
+            self.log_test("Get Device Status", False, "No child ID available")
+            return False
+        
+        try:
+            response = self.make_request("GET", f"/device-control/device-status/{self.child_id}")
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                details = f"Device status for {data.get('child_name')}: {data.get('total_devices')} total, {data.get('online_devices')} online"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text}"
+            
+            self.log_test("Get Device Status", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Get Device Status", False, f"Exception: {str(e)}")
+            return False
     
     def test_integration_flow(self):
         """Test complete end-to-end integration flow"""
