@@ -37,7 +37,7 @@ def create_family_sharing_router(db: AsyncIOMotorDatabase, get_current_user: Cal
         message: str
         data: Optional[dict] = None
 
-@router.post("/invite", response_model=FamilySharingResponse)
+    @router.post("/invite", response_model=FamilySharingResponse)
 async def invite_family_member(
     invite_data: dict,
     current_user_id: str = "user123"  # In real app, get from JWT token
