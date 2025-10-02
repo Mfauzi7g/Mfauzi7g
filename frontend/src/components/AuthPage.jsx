@@ -63,9 +63,12 @@ const AuthPage = () => {
     setLoading(true);
 
     try {
-      const result = isLogin 
-        ? await login({ email: formData.email, password: formData.password })
-        : await register(formData);
+      let result;
+      if (isLogin) {
+        result = await login(formData.email, formData.password);
+      } else {
+        result = await register(formData.name, formData.email, formData.password);
+      }
 
       if (result.success) {
         toast.success(isLogin ? t('auth.welcome_success') : t('auth.account_created'));
@@ -77,6 +80,83 @@ const AuthPage = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Google Auth Handlers
+  const handleGoogleSignIn = () => {
+    setSocialLoading({ ...socialLoading, google: true });
+    const currentUrl = window.location.origin + window.location.pathname;
+    const emergentAuthUrl = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(currentUrl)}`;
+    window.location.href = emergentAuthUrl;
+  };
+
+  const handleGoogleAuthCallback = async (sessionId) => {
+    try {
+      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/social-auth/google`, {
+        session_id: sessionId
+      }, {
+        withCredentials: true
+      });
+
+      if (response.data.success) {
+        toast.success('Successfully signed in with Google!');
+        login(response.data.user, response.data.access_token);
+      } else {
+        toast.error('Google authentication failed');
+      }
+    } catch (error) {
+      console.error('Google auth error:', error);
+      toast.error('Google authentication failed');
+    } finally {
+      setLoading(false);
+      setSocialLoading({ ...socialLoading, google: false });
+    }
+  };
+
+  // Apple Auth Handlers
+  const handleAppleSuccess = async (response) => {
+    setSocialLoading({ ...socialLoading, apple: true });
+    
+    try {
+      const { authorization, user } = response;
+      
+      const authResponse = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/social-auth/apple`, {
+        code: authorization.code,
+        id_token: authorization.id_token,
+        state: authorization.state,
+        user: user
+      }, {
+        withCredentials: true
+      });
+
+      if (authResponse.data.success) {
+        toast.success('Successfully signed in with Apple!');
+        login(authResponse.data.user, authResponse.data.access_token);
+      } else {
+        toast.error('Apple authentication failed');
+      }
+    } catch (error) {
+      console.error('Apple auth error:', error);
+      toast.error('Apple authentication failed');
+    } finally {
+      setSocialLoading({ ...socialLoading, apple: false });
+    }
+  };
+
+  const handleAppleError = (error) => {
+    console.error('Apple Sign In error:', error);
+    toast.error('Apple authentication failed');
+    setSocialLoading({ ...socialLoading, apple: false });
+  };
+
+  // Apple Auth Configuration
+  const appleAuthOptions = {
+    clientId: process.env.REACT_APP_APPLE_CLIENT_ID || 'com.screentime.web',
+    scope: 'email name',
+    redirectURI: window.location.origin,
+    state: 'signin-state-' + Math.random().toString(36).substring(2, 15),
+    nonce: 'nonce-' + Math.random().toString(36).substring(2, 15),
+    usePopup: true
   };
 
   const handleInputChange = (e) => {
