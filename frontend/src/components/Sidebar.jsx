@@ -79,7 +79,7 @@ const Sidebar = ({ selectedChild, children, onSelectChild, activeTab, onTabChang
       <div className="p-4">
         <div className="flex items-center space-x-2 mb-3">
           <Users className="w-4 h-4 text-gray-500" />
-          <span className="text-sm font-medium text-gray-700">Family Members</span>
+          <span className="text-sm font-medium text-gray-700">{t('sidebar.family_members')}</span>
         </div>
         <div className="space-y-2">
           {children.map((child) => (
