@@ -8,16 +8,16 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 def create_family_sharing_router(db: AsyncIOMotorDatabase, get_current_user: Callable):
     router = APIRouter(prefix="/family-sharing", tags=["family-sharing"])
 
-# Family sharing models
-class FamilyInvite(BaseModel):
-    id: str = None
-    from_user_id: str
-    to_email: str
-    family_id: str
-    role: str = "co-parent"  # "co-parent", "guardian"
-    status: str = "pending"  # "pending", "accepted", "rejected", "expired"
-    created_at: str = None
-    expires_at: str = None
+    # Family sharing models
+    class FamilyInvite(BaseModel):
+        id: str = None
+        from_user_id: str
+        to_email: str
+        family_id: str
+        role: str = "co-parent"  # "co-parent", "guardian"
+        status: str = "pending"  # "pending", "accepted", "rejected", "expired"
+        created_at: str = None
+        expires_at: str = None
 
 class FamilyMember(BaseModel):
     id: str = None
