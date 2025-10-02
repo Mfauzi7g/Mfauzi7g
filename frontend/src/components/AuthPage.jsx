@@ -93,21 +93,30 @@ const AuthPage = () => {
 
   const handleGoogleAuthCallback = async (sessionId) => {
     try {
+      console.log('Processing Google auth callback with session_id:', sessionId);
+      
       const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/social-auth/google`, {
         session_id: sessionId
       }, {
-        withCredentials: true
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
+
+      console.log('Google auth response:', response.data);
 
       if (response.data.success) {
         toast.success('Successfully signed in with Google!');
-        login(response.data.user, response.data.access_token);
+        // Use social login method
+        login(response.data.user, response.data.access_token, 'social');
       } else {
-        toast.error('Google authentication failed');
+        toast.error('Google authentication failed: ' + (response.data.message || 'Unknown error'));
       }
     } catch (error) {
-      console.error('Google auth error:', error);
-      toast.error('Google authentication failed');
+      console.error('Google auth error:', error.response?.data || error);
+      const errorMessage = error.response?.data?.detail || 'Google authentication failed';
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
       setSocialLoading({ ...socialLoading, google: false });
