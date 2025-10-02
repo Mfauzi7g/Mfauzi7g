@@ -27,7 +27,8 @@ const AuthPage = () => {
 
   // Check for existing session on component mount
   useEffect(() => {
-    checkExistingSession();
+    // Temporarily disable automatic session checking to prevent logout loops
+    // checkExistingSession();
     
     // Check for session_id in URL fragment (from Emergent Auth)
     const fragment = window.location.hash.substring(1);
@@ -35,6 +36,7 @@ const AuthPage = () => {
     const sessionId = params.get('session_id');
     
     if (sessionId) {
+      console.log('Google auth session_id found:', sessionId);
       setLoading(true);
       handleGoogleAuthCallback(sessionId);
       // Clean URL fragment
