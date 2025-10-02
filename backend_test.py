@@ -969,6 +969,9 @@ class ScreenTimeAPITester:
     def test_session_check_no_token(self):
         """Test session check without any token"""
         try:
+            # Clear any existing session and cookies
+            self.session.cookies.clear()
+            
             response = self.make_request("GET", "/social-auth/session")
             # Should fail with 401
             success = response.status_code == 401
