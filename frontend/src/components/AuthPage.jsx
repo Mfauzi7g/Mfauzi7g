@@ -128,26 +128,34 @@ const AuthPage = () => {
     setSocialLoading({ ...socialLoading, apple: true });
     
     try {
+      console.log('Apple Sign In response:', response);
       const { authorization, user } = response;
       
       const authResponse = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/social-auth/apple`, {
-        code: authorization.code,
-        id_token: authorization.id_token,
-        state: authorization.state,
+        code: authorization?.code,
+        id_token: authorization?.id_token,
+        state: authorization?.state,
         user: user
       }, {
-        withCredentials: true
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
+
+      console.log('Apple auth backend response:', authResponse.data);
 
       if (authResponse.data.success) {
         toast.success('Successfully signed in with Apple!');
-        login(authResponse.data.user, authResponse.data.access_token);
+        // Use social login method
+        login(authResponse.data.user, authResponse.data.access_token, 'social');
       } else {
-        toast.error('Apple authentication failed');
+        toast.error('Apple authentication failed: ' + (authResponse.data.message || 'Unknown error'));
       }
     } catch (error) {
-      console.error('Apple auth error:', error);
-      toast.error('Apple authentication failed');
+      console.error('Apple auth error:', error.response?.data || error);
+      const errorMessage = error.response?.data?.detail || 'Apple authentication failed';
+      toast.error(errorMessage);
     } finally {
       setSocialLoading({ ...socialLoading, apple: false });
     }
