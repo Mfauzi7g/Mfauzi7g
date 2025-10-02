@@ -92,8 +92,28 @@ async def shutdown_db_client():
     client.close()
 
 # WebSocket integration for real-time device communication
-# Get the Socket.IO server from device control router
-sio = device_control_router.sio
+# Create a new Socket.IO server instance for testing
+sio = socketio.AsyncServer(
+    cors_allowed_origins="*",
+    async_mode="asgi",
+    logger=True,
+    engineio_logger=True
+)
+
+# Add basic Socket.IO event handlers for testing
+@sio.event
+async def connect(sid, environ):
+    print(f"Socket.IO client connected: {sid}")
+    await sio.emit('connection_confirmed', {'status': 'connected'}, room=sid)
+
+@sio.event
+async def disconnect(sid):
+    print(f"Socket.IO client disconnected: {sid}")
+
+@sio.event
+async def test_message(sid, data):
+    print(f"Received test message from {sid}: {data}")
+    await sio.emit('test_response', {'message': 'Hello from server!'}, room=sid)
 
 # Create the final ASGI app that combines FastAPI and Socket.IO
 # This replaces the FastAPI app with a combined ASGI app
