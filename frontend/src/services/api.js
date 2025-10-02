@@ -206,3 +206,111 @@ export const chatAPI = {
     return await response.json();
   }
 };
+
+// Family Sharing API
+export const familySharingAPI = {
+  inviteMember: async (inviteData) => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API}/family-sharing/invite`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(inviteData)
+    });
+    
+    if (!response.ok) throw new Error('Failed to send invitation');
+    return await response.json();
+  },
+
+  getPendingInvites: async () => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API}/family-sharing/invites`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (!response.ok) throw new Error('Failed to get pending invites');
+    return await response.json();
+  },
+
+  acceptInvite: async (inviteId) => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API}/family-sharing/accept-invite/${inviteId}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (!response.ok) throw new Error('Failed to accept invitation');
+    return await response.json();
+  },
+
+  rejectInvite: async (inviteId) => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API}/family-sharing/reject-invite/${inviteId}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (!response.ok) throw new Error('Failed to reject invitation');
+    return await response.json();
+  },
+
+  getFamilyMembers: async () => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API}/family-sharing/family-members`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (!response.ok) throw new Error('Failed to get family members');
+    return await response.json();
+  },
+
+  getSharedChildren: async () => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API}/family-sharing/shared-children`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (!response.ok) throw new Error('Failed to get shared children');
+    return await response.json();
+  },
+
+  shareChild: async (shareData) => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API}/family-sharing/share-child`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(shareData)
+    });
+    
+    if (!response.ok) throw new Error('Failed to share child');
+    return await response.json();
+  },
+
+  removeAccess: async (memberId) => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API}/family-sharing/remove-access/${memberId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (!response.ok) throw new Error('Failed to remove access');
+    return await response.json();
+  }
+};
