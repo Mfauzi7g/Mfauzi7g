@@ -155,8 +155,8 @@ const AuthPage = () => {
               className="text-blue-600 hover:text-blue-700 font-medium"
             >
               {isLogin 
-                ? "Don't have an account? Sign up" 
-                : 'Already have an account? Sign in'
+                ? t('auth.no_account')
+                : t('auth.have_account')
               }
             </button>
           </div>
@@ -164,9 +164,9 @@ const AuthPage = () => {
           {isLogin && (
             <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
               <p className="text-xs text-blue-700">
-                <strong>Demo Account:</strong><br />
-                Email: demo@parent.com<br />
-                Password: demo123
+                <strong>{t('auth.demo_account')}</strong><br />
+                {t('auth.demo_email')}<br />
+                {t('auth.demo_password')}
               </p>
             </div>
           )}
