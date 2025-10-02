@@ -123,4 +123,86 @@ export const rewardsAPI = {
   }
 };
 
-// Add chat API functions to services/api.js\n\nexport const chatAPI = {\n  getConversations: async () => {\n    const token = localStorage.getItem('authToken');\n    const response = await fetch(`${API}/chat/conversations`, {\n      headers: {\n        'Authorization': `Bearer ${token}`\n      }\n    });\n    \n    if (!response.ok) throw new Error('Failed to get conversations');\n    return await response.json();\n  },\n  \n  getMessages: async (childId, limit = 50, offset = 0) => {\n    const token = localStorage.getItem('authToken');\n    const response = await fetch(`${API}/chat/messages/${childId}?limit=${limit}&offset=${offset}`, {\n      headers: {\n        'Authorization': `Bearer ${token}`\n      }\n    });\n    \n    if (!response.ok) throw new Error('Failed to get messages');\n    return await response.json();\n  },\n  \n  sendMessage: async (messageData) => {\n    const token = localStorage.getItem('authToken');\n    const response = await fetch(`${API}/chat/send`, {\n      method: 'POST',\n      headers: {\n        'Authorization': `Bearer ${token}`,\n        'Content-Type': 'application/json'\n      },\n      body: JSON.stringify(messageData)\n    });\n    \n    if (!response.ok) throw new Error('Failed to send message');\n    return await response.json();\n  },\n  \n  markAsRead: async (messageIds) => {\n    const token = localStorage.getItem('authToken');\n    const response = await fetch(`${API}/chat/mark-read`, {\n      method: 'POST',\n      headers: {\n        'Authorization': `Bearer ${token}`,\n        'Content-Type': 'application/json'\n      },\n      body: JSON.stringify({ message_ids: messageIds })\n    });\n    \n    if (!response.ok) throw new Error('Failed to mark messages as read');\n    return await response.json();\n  },\n  \n  getQuickResponses: async () => {\n    const token = localStorage.getItem('authToken');\n    const response = await fetch(`${API}/chat/quick-responses`, {\n      headers: {\n        'Authorization': `Bearer ${token}`\n      }\n    });\n    \n    if (!response.ok) throw new Error('Failed to get quick responses');\n    return await response.json();\n  },\n  \n  sendEmergencyRequest: async (childId, reason) => {\n    const token = localStorage.getItem('authToken');\n    const response = await fetch(`${API}/chat/emergency-request/${childId}`, {\n      method: 'POST',\n      headers: {\n        'Authorization': `Bearer ${token}`,\n        'Content-Type': 'application/json'\n      },\n      body: JSON.stringify({ reason })\n    });\n    \n    if (!response.ok) throw new Error('Failed to send emergency request');\n    return await response.json();\n  }\n};
+// Chat API functions
+export const chatAPI = {
+  getConversations: async () => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API}/chat/conversations`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (!response.ok) throw new Error('Failed to get conversations');
+    return await response.json();
+  },
+  
+  getMessages: async (childId, limit = 50, offset = 0) => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API}/chat/messages/${childId}?limit=${limit}&offset=${offset}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (!response.ok) throw new Error('Failed to get messages');
+    return await response.json();
+  },
+  
+  sendMessage: async (messageData) => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API}/chat/send`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(messageData)
+    });
+    
+    if (!response.ok) throw new Error('Failed to send message');
+    return await response.json();
+  },
+  
+  markAsRead: async (messageIds) => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API}/chat/mark-read`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ message_ids: messageIds })
+    });
+    
+    if (!response.ok) throw new Error('Failed to mark messages as read');
+    return await response.json();
+  },
+  
+  getQuickResponses: async () => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API}/chat/quick-responses`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (!response.ok) throw new Error('Failed to get quick responses');
+    return await response.json();
+  },
+  
+  sendEmergencyRequest: async (childId, reason) => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API}/chat/emergency-request/${childId}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ reason })
+    });
+    
+    if (!response.ok) throw new Error('Failed to send emergency request');
+    return await response.json();
+  }
+};
