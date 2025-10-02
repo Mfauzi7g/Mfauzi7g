@@ -20,6 +20,7 @@ import { mockSubscriptionData } from '../data/mock';
 const Sidebar = ({ selectedChild, children, onSelectChild, activeTab, onTabChange, onUpgrade }) => {
   const menuItems = [
     { id: 'overview', label: 'Overview', icon: BarChart3 },
+    { id: 'chat', label: 'Family Chat', icon: MessageCircle },
     { id: 'rewards', label: 'Tasks & Rewards', icon: Gift },
     { id: 'device-control', label: 'Device Control', icon: Radio },
     { id: 'screen-time', label: 'Screen Time', icon: Clock },
