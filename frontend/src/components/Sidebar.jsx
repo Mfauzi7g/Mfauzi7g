@@ -38,12 +38,15 @@ const Sidebar = ({ selectedChild, children, onSelectChild, activeTab, onTabChang
     <div className="w-64 bg-white border-r border-gray-200 h-screen overflow-y-auto">
       {/* Header */}
       <div className="p-6 border-b border-gray-100">
-        <div className="flex items-center space-x-2">
-          <Clock className="w-8 h-8 text-blue-600" />
-          <div>
-            <h1 className="text-xl font-semibold text-gray-900">Screen Time</h1>
-            <p className="text-sm text-gray-500">Parental Controls</p>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Clock className="w-8 h-8 text-blue-600" />
+            <div>
+              <h1 className="text-xl font-semibold text-gray-900">{t('app.title')}</h1>
+              <p className="text-sm text-gray-500">{t('app.subtitle')}</p>
+            </div>
           </div>
+          <LanguageSelector />
         </div>
       </div>
 
