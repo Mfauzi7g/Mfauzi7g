@@ -20,16 +20,18 @@ import {
 import { mockSubscriptionData } from '../data/mock';
 
 const Sidebar = ({ selectedChild, children, onSelectChild, activeTab, onTabChange, onUpgrade }) => {
+  const { t } = useTranslation();
+
   const menuItems = [
-    { id: 'overview', label: 'Overview', icon: BarChart3 },
-    { id: 'chat', label: 'Family Chat', icon: MessageCircle },
-    { id: 'rewards', label: 'Tasks & Rewards', icon: Gift },
-    { id: 'device-control', label: 'Device Control', icon: Radio },
-    { id: 'screen-time', label: 'Screen Time', icon: Clock },
-    { id: 'app-limits', label: 'App Limits', icon: Smartphone },
-    { id: 'downtime', label: 'Downtime', icon: Shield },
-    { id: 'content', label: 'Content & Privacy', icon: Shield },
-    { id: 'settings', label: 'Settings', icon: Settings }
+    { id: 'overview', label: t('sidebar.overview'), icon: BarChart3 },
+    { id: 'chat', label: t('sidebar.family_chat'), icon: MessageCircle },
+    { id: 'rewards', label: t('sidebar.tasks_rewards'), icon: Gift },
+    { id: 'device-control', label: t('sidebar.device_control'), icon: Radio },
+    { id: 'screen-time', label: t('sidebar.screen_time'), icon: Clock },
+    { id: 'app-limits', label: t('sidebar.app_limits'), icon: Smartphone },
+    { id: 'downtime', label: t('sidebar.downtime'), icon: Shield },
+    { id: 'content', label: t('sidebar.content_privacy'), icon: Shield },
+    { id: 'settings', label: t('sidebar.settings'), icon: Settings }
   ];
 
   return (
