@@ -152,8 +152,9 @@ def create_social_auth_router(db: AsyncIOMotorDatabase, get_current_user):
             logger.info(f"Processing Google auth with session_id: {auth_request.session_id}")
             
             # Call Emergent Auth service to get user data
+            auth_service_url = os.getenv('AUTH_SERVICE_URL', 'https://demobackend.emergentagent.com')
             auth_response = requests.get(
-                "https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data",
+                f"{auth_service_url}/auth/v1/env/oauth/session-data",
                 headers={"X-Session-ID": auth_request.session_id},
                 timeout=10
             )
