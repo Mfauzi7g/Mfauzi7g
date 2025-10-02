@@ -18,6 +18,7 @@ class ScreenTimeAPITester:
         self.base_url = BACKEND_URL
         self.session = requests.Session()
         self.auth_token = None
+        self.session_token = None
         self.user_data = None
         self.child_id = None
         self.task_id = None
