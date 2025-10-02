@@ -773,6 +773,60 @@ class ScreenTimeAPITester:
             self.log_test("Get Device Status", False, f"Exception: {str(e)}")
             return False
     
+    def test_family_sharing_flow(self):
+        """Test complete family sharing functionality"""
+        print("\n" + "="*50)
+        print("TESTING FAMILY SHARING FUNCTIONALITY")
+        print("="*50)
+        
+        # Test all family sharing endpoints
+        tests = [
+            self.test_send_family_invite,
+            self.test_get_pending_invites,
+            self.test_accept_family_invite,
+            self.test_get_family_members,
+            self.test_get_shared_children,
+            self.test_share_child,
+            self.test_remove_family_access
+        ]
+        
+        for test in tests:
+            if not test():
+                return False
+        
+        print("✅ FAMILY SHARING TESTS COMPLETED!")
+        return True
+    
+    def test_chat_and_device_flow(self):
+        """Test chat and device control functionality"""
+        print("\n" + "="*50)
+        print("TESTING CHAT & DEVICE CONTROL FUNCTIONALITY")
+        print("="*50)
+        
+        # Test chat endpoints
+        chat_tests = [
+            self.test_get_chat_conversations,
+            self.test_get_chat_messages,
+            self.test_send_chat_message,
+            self.test_get_quick_responses
+        ]
+        
+        # Test device control endpoints
+        device_tests = [
+            self.test_generate_pairing_code,
+            self.test_get_child_devices,
+            self.test_get_device_status
+        ]
+        
+        all_tests = chat_tests + device_tests
+        
+        for test in all_tests:
+            if not test():
+                return False
+        
+        print("✅ CHAT & DEVICE CONTROL TESTS COMPLETED!")
+        return True
+
     def test_integration_flow(self):
         """Test complete end-to-end integration flow"""
         print("\n" + "="*60)
@@ -843,7 +897,7 @@ class ScreenTimeAPITester:
             return False
         
         print("\n" + "="*60)
-        print("✅ INTEGRATION FLOW COMPLETED SUCCESSFULLY!")
+        print("✅ CORE INTEGRATION FLOW COMPLETED SUCCESSFULLY!")
         print("="*60)
         return True
     
