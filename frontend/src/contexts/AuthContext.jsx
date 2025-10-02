@@ -40,15 +40,21 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (emailOrUser, passwordOrToken, type = 'email') => {
     try {
-      let response, userData, accessToken;
+      let userData, accessToken;
       
       if (type === 'social' || type === 'existing_session') {
         // Social login or existing session - user data already provided
         userData = emailOrUser;
         accessToken = passwordOrToken;
+        
+        console.log('Social login - userData:', userData);
+        console.log('Social login - accessToken:', accessToken);
       } else {
         // Email/password login
-        response = await authAPI.login({ email: emailOrUser, password: passwordOrToken });
+        const loginData = { email: emailOrUser, password: passwordOrToken };
+        console.log('Traditional login attempt:', loginData);
+        
+        const response = await authAPI.login(loginData);
         userData = response.user;
         accessToken = response.access_token;
       }
@@ -61,12 +67,14 @@ export const AuthProvider = ({ children }) => {
       setUser(userData);
       setIsAuthenticated(true);
       
+      console.log('Login successful, user set:', userData);
       return { success: true };
     } catch (error) {
       console.error('Login error:', error);
+      console.error('Error details:', error.response?.data);
       return { 
         success: false, 
-        error: error.response?.data?.detail || 'Login failed'
+        error: error.response?.data?.detail || error.message || 'Login failed'
       };
     }
   };
