@@ -49,16 +49,21 @@ const AuthPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center p-4">
+      {/* Language Selector - Fixed Position */}
+      <div className="fixed top-4 right-4 z-50">
+        <LanguageSelector />
+      </div>
+      
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-2">
           <div className="flex items-center justify-center space-x-2">
             <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-lg">ST</span>
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">Screen Time</h1>
+            <h1 className="text-2xl font-bold text-gray-900">{t('app.title')}</h1>
           </div>
           <p className="text-gray-600">
-            {isLogin ? 'Welcome back!' : 'Create your parent account'}
+            {isLogin ? t('auth.welcome_back') : t('auth.create_account')}
           </p>
         </CardHeader>
         <CardContent>
