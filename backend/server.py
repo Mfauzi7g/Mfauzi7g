@@ -71,11 +71,7 @@ api_router.include_router(social_auth_router)
 # Include the main API router in the app
 app.include_router(api_router)
 
-# WebSocket integration for real-time device communication
-sio = device_control_router.sio
-sio_asgi_app = socketio.ASGIApp(sio, app)
-
-# CORS middleware
+# CORS middleware - must be added before WebSocket integration
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
@@ -83,6 +79,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# WebSocket integration for real-time device communication
+sio = device_control_router.sio
+# Create the combined ASGI app that handles both HTTP and WebSocket
+app = socketio.ASGIApp(sio, app)
 
 # Configure logging
 logging.basicConfig(
