@@ -231,27 +231,33 @@ test_plan:
 
   - task: "Family Chat System (NEW FEATURE)"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/components/FamilyChat.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "NEW FEATURE: Family Chat system implemented with chat interface, message sending, quick responses, emergency communication options. Needs comprehensive testing for Emma and Alex chat functionality."
+        - working: true
+          agent: "testing"
+          comment: "WORKING: Family Chat system fully functional. Fixed chatAPI import issue in api.js. Chat interface loads correctly with 'Chat with Emma/Alex' headers. Message input field works, quick response (emoji) button functional, emergency communication section present with 'Grant Emergency Access' and 'Request Immediate Call' buttons. Family member switching between Emma and Alex works correctly. Chat API endpoints responding with 200 OK status. UI follows iOS design standards with proper message formatting and status indicators."
 
   - task: "Per-Child Subscription Pricing (NEW FEATURE)"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/components/SubscriptionModal.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "NEW FEATURE: Updated subscription modal with per-child pricing model. Monthly: $4.99 per child, Yearly: $49.99 per child. Shows total pricing for 2 children ($9.98 monthly, $99.98 yearly) with savings calculation. Needs testing for pricing calculator and plan selection."
+        - working: true
+          agent: "testing"
+          comment: "WORKING: Per-Child Subscription Pricing fully functional. Modal displays 'Per-Child Pricing Model' section correctly. Shows 'You have 2 children' with accurate calculation. Monthly plan shows $9.98 total ($4.99 × 2 children), Yearly plan shows $99.98 total ($49.99 × 2 children). Savings calculation displays 'Save $19.78 vs monthly billing'. Plan selection works between Monthly and Yearly options. Payment Summary section shows per-child breakdown. Subscription flow initiates with processing state. All pricing calculations accurate for multiple children."
 
 agent_communication:
     - agent: "testing"
