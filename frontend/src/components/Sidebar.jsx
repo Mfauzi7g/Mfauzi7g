@@ -25,7 +25,7 @@ const Sidebar = ({ selectedChild, children, onSelectChild, activeTab, onTabChang
   const menuItems = [
     { id: 'overview', label: t('sidebar.overview'), icon: BarChart3 },
     { id: 'chat', label: t('sidebar.family_chat'), icon: MessageCircle },
-    { id: 'family-sharing', label: 'Family Sharing', icon: Users },
+    { id: 'family-sharing', label: t('sidebar.family_sharing'), icon: Users },
     { id: 'rewards', label: t('sidebar.tasks_rewards'), icon: Gift },
     { id: 'device-control', label: t('sidebar.device_control'), icon: Radio },
     { id: 'screen-time', label: t('sidebar.screen_time'), icon: Clock },
