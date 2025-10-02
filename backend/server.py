@@ -80,11 +80,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# WebSocket integration for real-time device communication
-sio = device_control_router.sio
-# Create the combined ASGI app that handles both HTTP and WebSocket
-app = socketio.ASGIApp(sio, app)
-
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -95,3 +90,8 @@ logger = logging.getLogger(__name__)
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
+
+# WebSocket integration for real-time device communication
+sio = device_control_router.sio
+# Create the combined ASGI app that handles both HTTP and WebSocket
+app = socketio.ASGIApp(sio, app)
