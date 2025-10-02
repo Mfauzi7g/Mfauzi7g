@@ -433,7 +433,7 @@ class ScreenTimeAPITester:
                 return False
             
             # Redeem 15 minutes
-            response = self.make_request("POST", f"/rewards/{self.child_id}/redeem", {"minutes_to_redeem": 15})
+            response = self.make_request("POST", f"/rewards/{self.child_id}/redeem?minutes_to_redeem=15")
             success = response.status_code == 200
             
             if success:
