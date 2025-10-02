@@ -258,6 +258,42 @@ test_plan:
           agent: "testing"
           comment: "WORKING: Per-Child Subscription Pricing fully functional. Modal displays 'Per-Child Pricing Model' section correctly. Shows 'You have 2 children' with accurate calculation. Monthly plan shows $9.98 total ($4.99 × 2 children), Yearly plan shows $99.98 total ($49.99 × 2 children). Savings calculation displays 'Save $19.78 vs monthly billing'. Plan selection works between Monthly and Yearly options. Payment Summary section shows per-child breakdown. Subscription flow initiates with processing state. All pricing calculations accurate for multiple children."
 
+  - task: "Multi-Language Support (NEW FEATURE)"
+    implemented: false
+    working: "NA"
+    file: "/app/frontend/src/i18n/"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "NEW FEATURE: Need to implement i18n support for Arabic, English, French, Spanish, Dutch languages. Includes RTL support for Arabic and language selector component."
+
+  - task: "Family Sharing Functionality (NEW FEATURE)"
+    implemented: false
+    working: "NA"
+    file: "/app/backend/routers/family_sharing.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "NEW FEATURE: Need to implement family sharing to allow multiple parents to manage same children or share children across family accounts."
+
+  - task: "Companion App Deployment (PENDING)"
+    implemented: false
+    working: "NA"
+    file: "/app/ScreenTimeChild/"
+    stuck_count: 1
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "PENDING: React Native companion app code exists but needs to be built into .ipa and .apk files for device installation and real device control functionality."
+
 agent_communication:
     - agent: "testing"
       message: "Comprehensive testing completed. Fixed critical family creation bug that was preventing Emma and Alex from being created automatically. All major features now working: Authentication (registration/login), Family Management (Emma & Alex creation), Overview Dashboard (screen time stats, weekly chart), Rewards System (task creation, time bank), Subscription Modal (plan selection), and Navigation. One minor issue remains with sample screen time data creation (422 errors) but doesn't affect core functionality. App is fully functional for the requested testing scope."
