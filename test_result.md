@@ -237,12 +237,13 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Social Authentication UI Integration (NEW FEATURE) - COMPLETED SUCCESSFULLY"
+    - "WebSocket Parent-Child Communication (CRITICAL ISSUE) - INFRASTRUCTURE ISSUE IDENTIFIED"
   stuck_tasks:
+    - "WebSocket Parent-Child Communication (requires Kubernetes ingress configuration)"
     - "Sample Screen Time Data Creation (minor issue - 422 errors)"
     - "Companion App Deployment (requires mobile app building, not frontend testing)"
   test_all: true
-  test_priority: "completed"
+  test_priority: "infrastructure_fix_required"
 
   - task: "Family Chat System (NEW FEATURE)"
     implemented: true
