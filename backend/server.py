@@ -92,6 +92,9 @@ async def shutdown_db_client():
     client.close()
 
 # WebSocket integration for real-time device communication
+# Get the Socket.IO server from device control router
 sio = device_control_router.sio
-# Create Socket.IO ASGI app and mount it at root to handle Socket.IO traffic
-socket_app = socketio.ASGIApp(sio, app)
+
+# Create the final ASGI app that combines FastAPI and Socket.IO
+# This replaces the FastAPI app with a combined ASGI app
+app = socketio.ASGIApp(sio, app)
