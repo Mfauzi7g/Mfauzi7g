@@ -57,10 +57,10 @@ const Sidebar = ({ selectedChild, children, onSelectChild, activeTab, onTabChang
             <CardContent className="p-4">
               <div className="flex items-center space-x-2 mb-2">
                 <Crown className="w-5 h-5" />
-                <span className="font-semibold">Free Trial</span>
+                <span className="font-semibold">{t('sidebar.free_trial')}</span>
               </div>
               <p className="text-sm mb-3 opacity-90">
-                {Math.ceil((mockSubscriptionData.trialEndsAt - new Date()) / (1000 * 60 * 60 * 24))} days left
+                {Math.ceil((mockSubscriptionData.trialEndsAt - new Date()) / (1000 * 60 * 60 * 24))} {t('sidebar.days_left')}
               </p>
               <Button 
                 variant="secondary" 
@@ -68,7 +68,7 @@ const Sidebar = ({ selectedChild, children, onSelectChild, activeTab, onTabChang
                 className="w-full bg-white text-purple-600 hover:bg-gray-50"
                 onClick={onUpgrade}
               >
-                Upgrade Now
+                {t('sidebar.upgrade_now')}
               </Button>
             </CardContent>
           </Card>
