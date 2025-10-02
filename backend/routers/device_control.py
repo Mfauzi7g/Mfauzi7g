@@ -136,6 +136,9 @@ device_manager = DeviceManager()
 def create_device_control_router(db: AsyncIOMotorDatabase, get_current_user):
     router = APIRouter(prefix="/device-control", tags=["device-control"])
     
+    # Attach device_manager to router for access by other modules
+    router.device_manager = device_manager
+    
     async def verify_child_ownership(child_id: str, current_user: dict):
         """Verify child belongs to current user"""
         child = await db.children.find_one({
