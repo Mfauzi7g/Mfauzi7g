@@ -86,7 +86,8 @@ const AuthPage = () => {
   const handleGoogleSignIn = () => {
     setSocialLoading({ ...socialLoading, google: true });
     const currentUrl = window.location.origin + window.location.pathname;
-    const emergentAuthUrl = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(currentUrl)}`;
+    const authServiceUrl = process.env.REACT_APP_AUTH_SERVICE_URL || 'https://auth.emergentagent.com';
+    const emergentAuthUrl = `${authServiceUrl}/?redirect=${encodeURIComponent(currentUrl)}`;
     window.location.href = emergentAuthUrl;
   };
 
