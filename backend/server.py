@@ -87,7 +87,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-@app.on_event("shutdown")
+# Store the original FastAPI app for shutdown event
+original_app = app
+
+@original_app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
 
@@ -117,4 +120,4 @@ async def test_message(sid, data):
 
 # Create the final ASGI app that combines FastAPI and Socket.IO
 # This replaces the FastAPI app with a combined ASGI app
-app = socketio.ASGIApp(sio, app)
+app = socketio.ASGIApp(sio, original_app)
