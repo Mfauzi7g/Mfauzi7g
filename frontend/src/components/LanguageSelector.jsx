@@ -18,6 +18,13 @@ const LanguageSelector = () => {
 
   const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
 
+  // Set initial direction on mount
+  useEffect(() => {
+    const currentLang = languages.find(lang => lang.code === i18n.language) || languages[0];
+    document.documentElement.dir = currentLang.dir;
+    document.documentElement.lang = i18n.language;
+  }, [i18n.language]);
+
   const handleLanguageChange = (languageCode) => {
     const selectedLang = languages.find(lang => lang.code === languageCode);
     
