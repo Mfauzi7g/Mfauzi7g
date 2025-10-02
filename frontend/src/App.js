@@ -14,6 +14,7 @@ import FamilyChat from './components/FamilyChat';
 import FamilySharing from './components/FamilySharing';
 import SubscriptionModal from './components/SubscriptionModal';
 import LanguageSelector from './components/LanguageSelector';
+import WebSocketStatus from './components/WebSocketStatus';
 import { familyAPI, screenTimeAPI, chatAPI } from './services/api';
 import './i18n';
 
