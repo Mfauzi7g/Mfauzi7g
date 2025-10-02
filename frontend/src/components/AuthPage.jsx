@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import LanguageSelector from './LanguageSelector';
 
 const AuthPage = () => {
+  const { t } = useTranslation();
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
