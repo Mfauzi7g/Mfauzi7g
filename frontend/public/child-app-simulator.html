@@ -281,7 +281,7 @@
         // Get backend URL from environment or use deployed URL
         const BACKEND_URL = window.location.origin.includes('localhost') 
             ? window.location.origin.replace(':3000', ':8001')
-            : window.location.origin.replace(/:\d+/, '') + '/api';
+            : window.location.origin;
         
         function pairDevice() {
             const pairingCode = document.getElementById('pairingCode').value;
