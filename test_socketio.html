@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Socket.IO Test</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+    <h1>Socket.IO Connection Test</h1>
+    <div id="status">Testing...</div>
+    <div id="logs"></div>
+
+    <script>
+        const status = document.getElementById('status');
+        const logs = document.getElementById('logs');
+        
+        function log(message) {
+            console.log(message);
+            logs.innerHTML += '<p>' + new Date().toLocaleTimeString() + ': ' + message + '</p>';
+        }
+
+        log('Starting Socket.IO connection test...');
+        
+        const socket = io('http://localhost:8001', {
+            transports: ['polling'],
+            timeout: 10000,
+            forceNew: true
+        });
+
+        socket.on('connect', () => {
+            status.textContent = 'Connected!';
+            status.style.color = 'green';
+            log('Successfully connected to Socket.IO server');
+            log('Transport: ' + socket.io.engine.transport.name);
+        });
+
+        socket.on('connect_error', (error) => {
+            status.textContent = 'Connection Failed';
+            status.style.color = 'red';
+            log('Connection error: ' + JSON.stringify(error));
+        });
+
+        socket.on('disconnect', (reason) => {
+            status.textContent = 'Disconnected';
+            status.style.color = 'orange';
+            log('Disconnected: ' + reason);
+        });
+
+        socket.on('connection_confirmed', (data) => {
+            log('Received connection confirmation: ' + JSON.stringify(data));
+        });
+    </script>
+</body>
+</html>
