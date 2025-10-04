@@ -301,15 +301,9 @@
             try {
                 console.log('Attempting to connect to:', BACKEND_URL);
                 socket = io(BACKEND_URL, {
-                    transports: ['polling'], // Use polling only for better compatibility
+                    transports: ['polling'], // Use polling - confirmed working!
                     timeout: 10000,
-                    forceNew: true,
-                    autoConnect: true,
-                    path: '/socket.io/',
-                    cors: {
-                        origin: window.location.origin,
-                        credentials: true
-                    }
+                    forceNew: true
                 });
                 
                 socket.on('connect', () => {
