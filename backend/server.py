@@ -121,6 +121,11 @@ async def disconnect(sid):
     print(f"Socket.IO client disconnected: {sid}")
 
 @sio.event
+async def connect_error(sid, data):
+    print(f"Connection error for {sid}: {data}")
+    return False  # Reject connection
+
+@sio.event
 async def test_message(sid, data):
     print(f"Received test message from {sid}: {data}")
     await sio.emit('test_response', {'message': 'Hello from server!'}, room=sid)
