@@ -107,9 +107,14 @@ sio = socketio.AsyncServer(
 
 # Add basic Socket.IO event handlers for testing
 @sio.event
-async def connect(sid, environ):
-    print(f"Socket.IO client connected: {sid}")
-    await sio.emit('connection_confirmed', {'status': 'connected'}, room=sid)
+async def connect(sid, environ, auth):
+    print(f"Client connected: {sid}")
+    print(f"Environment: {environ.get('HTTP_ORIGIN', 'No origin')}")
+    try:
+        await sio.emit('connection_confirmed', {'status': 'connected'}, room=sid)
+        print(f"Connection confirmed for {sid}")
+    except Exception as e:
+        print(f"Error sending connection confirmation: {e}")
 
 @sio.event
 async def disconnect(sid):
