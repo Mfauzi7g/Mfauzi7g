@@ -13,7 +13,7 @@ async def test_socketio_connection():
     
     # First test if the backend is accessible
     try:
-        response = requests.get("https://screentime-parent.preview.emergentagent.com/api/")
+        response = requests.get("https://guardtime.preview.emergentagent.com/api/")
         print(f"Backend HTTP status: {response.status_code}")
         if response.status_code != 200:
             print("Backend is not accessible")
@@ -47,7 +47,7 @@ async def test_socketio_connection():
     try:
         print("Attempting to connect to Socket.IO server...")
         await asyncio.wait_for(
-            sio.connect("https://screentime-parent.preview.emergentagent.com"),
+            sio.connect("https://guardtime.preview.emergentagent.com"),
             timeout=15.0
         )
         

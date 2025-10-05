@@ -1,41 +1,22 @@
 <analysis>
-The trajectory details the iterative development of a Screen Time parental control application, guided by a series of user requests. The project began with the creation of a frontend-only clone of the iOS Screen Time interface, using mock data to populate the UI. The initial user approval led to the second phase: building the FastAPI backend, implementing user authentication, and introducing a novel rewards system where children can earn screen time by completing tasks.
+The trajectory details the iterative development of a Screen Time parental control application. Initially, it involved building a React frontend, a FastAPI backend, and a React Native child companion app. Core features included screen time tracking, a reward system, and a WebSocket-based system for real device control (though deployment was challenging).
 
-The third major phase involved tackling real device control. After explaining the technical architecture (MDM APIs, companion apps), the engineer implemented a WebSocket-based system for real-time communication. This included creating backend endpoints for device management and frontend components to interact with them. A significant pivot occurred when the engineer encountered mobile build environment issues; instead of a direct build, deployment guides and a web simulator were created to demonstrate functionality.
-
-The final phase, in response to the latest user request, involved adding a family chat feature and updating the subscription model to a per-child pricing structure. This required adding new backend routes, frontend components, and modifying existing subscription logic. The process involved multiple debugging cycles, including fixing backend attribute errors and frontend state management conflicts, before successfully verifying the new features.
+Recent work saw the implementation of multi-language support (i18next with five languages including RTL) and a custom family sharing feature. Social authentication (Google and Apple Sign-In) was integrated, requiring extensive debugging for session persistence and correct configuration. A critical deployment issue (white page) was resolved by ensuring a production build was served. WebSocket functionality remains limited due to external Kubernetes ingress configuration. The last active task was making the sidebar collapsible and animated, demonstrating continuous UI/UX improvement amidst ongoing infrastructure and feature refinement.
 </analysis>
 
 <product_requirements>
-The goal is to build a comprehensive parental control application. The core of the application is a web-based dashboard for parents.
+The application aims to be a comprehensive parental control solution centered around a web dashboard. Key requirements include a visual clone of Apple Screen Time for displaying child analytics and a mock subscription system. A gamified reward system allows parents to assign tasks, granting children extra screen time. Real device control, encompassing app limits, downtime, and emergency unlock, relies on companion mobile apps for enforcement.
 
-**Phase 1: Core Dashboard (Completed)**
-- Create a web dashboard that visually clones the Apple Screen Time interface.
-- Display screen time analytics for multiple children in a family.
-- Implement a mock in-app purchase system with monthly and yearly subscription tiers.
-
-**Phase 2: Reward System (Completed)**
-- Introduce a gamified rewards system.
-- Parents can create and assign real-world tasks (e.g., chores, homework) to their children.
-- Upon task completion, children earn a specified amount of extra screen time, which is added to a time bank they can redeem.
-
-**Phase 3: Real Device Control (System Built, Deployment Pending)**
-- The web dashboard must be able to send real-time commands to control children's devices.
-- This requires companion mobile apps (iOS/Android) to be installed on the children's devices.
-- The system must support features like setting app time limits, scheduling device downtime, and an emergency unlock function.
-- A secure device pairing mechanism (e.g., 6-digit code) is required to link a child's device to the parent's account.
-
-**Phase 4: Family Chat & Subscription Update (Completed)**
-- Implement an in-app, real-time chat feature for communication between parents and children.
-- Revise the subscription model from a single family plan to a per-child pricing structure: .99/month per child and 9.99/year per child.
+Recent additions include an in-app, real-time family chat feature and a revised per-child subscription model priced at .99/month or 9.99/year. The user further requested multi-language support (Arabic, English, French, Spanish, Dutch) and enhanced authentication options (Sign in with Google and Sign in with Apple). The latest feature request is for an animated, collapsible sidebar menu to improve UI navigation.
 </product_requirements>
 
 <key_technical_concepts>
-- **Full-Stack Architecture**: React frontend with FastAPI backend and MongoDB database.
-- **Real-Time Communication**: WebSockets ( and ) for instant communication between the parent dashboard and child devices.
-- **Mobile Integration**: React Native for creating cross-platform companion apps for iOS and Android.
-- **UI/UX**: Styled with TailwindCSS and utilizes pre-built Shadcn UI components for a modern look.
-- **State Management**: React Context API (, ) for managing application-wide state.
+-   **Full-Stack Architecture**: React frontend, FastAPI backend, MongoDB.
+-   **Real-Time Communication**: WebSockets using  and .
+-   **Mobile Integration**: React Native (companion app).
+-   **UI/UX**: TailwindCSS, Shadcn UI,  for multi-language.
+-   **State Management**: React Context API.
+-   **Authentication**: Traditional, Google OAuth, Apple Sign In.
 </key_technical_concepts>
 
 <code_architecture>
@@ -43,47 +24,96 @@ The application is structured into three main parts: a React frontend, a FastAPI
 
 
 
--   **/app/backend/server.py**
-    -   **Importance**: The main entry point for the backend application. It initializes the FastAPI app, sets up CORS, connects to MongoDB, and includes all the API routers for different features like auth, chat, and device control. It was updated to integrate the WebSocket server.
-    -   **Changes**: Routers for rewards, device control, and chat were added. The server startup logic was modified to incorporate the  asynchronous server alongside the main FastAPI app.
+-   ****
+    -   **Importance**: Main entry point for the FastAPI backend.
+    -   **Changes**: Integrated new routers (, ), refactored router inclusion to use a factory pattern, and added enhanced Socket.IO logging and error handling.
 
--   **/app/frontend/src/App.js**
-    -   **Importance**: The root component of the React application. It sets up routing () and wraps the application in necessary context providers (, ).
-    -   **Changes**: Initially a simple component, it was heavily modified to include protected routes, authentication logic, and context providers as new features were added. The main view was updated to conditionally render different components like  and  based on the selected sidebar navigation item.
+-   ****
+    -   **Importance**: Root React component managing routes and context.
+    -   **Changes**: Initialized , integrated , , and  components, and updated routing for new features.
 
--   **/app/frontend/src/components/DeviceControl.jsx**
-    -   **Importance**: This component provides the UI for parents to manage and control their children's devices. It handles generating pairing codes, viewing device status, and sending commands like setting app limits or locking the device.
-    -   **Changes**: Created from scratch to implement the device control feature. It interacts with the  to communicate with the WebSocket backend. It underwent debugging to resolve a state variable naming conflict ().
+-   ****
+    -   **Importance**: Handles user authentication.
+    -   **Changes**: Modified to include Google and Apple social login buttons, integrated  for translations, and improved error handling/session processing for social authentication.
 
--   **/app/frontend/src/components/FamilyChat.jsx**
-    -   **Importance**: The component for the real-time chat feature between parent and child.
-    -   **Changes**: Created during the last work cycle. It includes a message display area, a text input field, and uses the  service to send and receive messages via the backend.
+-   ****
+    -   **Importance**: Provides the user interface for custom family member invitation and management.
+    -   **Changes**: Newly created to implement the family sharing feature.
 
--   **/app/ScreenTimeChild/**
-    -   **Importance**: This directory contains the complete source code for the React Native companion app meant to be installed on the child's device. It is responsible for receiving commands from the backend and enforcing them using native APIs.
-    -   **Changes**: The project was initialized using . Custom files like  were added to handle the UI, and native bridge modules (, ) were created to interface with iOS's Screen Time API and Android's Digital Wellbeing API.
+-   ****
+    -   **Importance**: Component for language selection.
+    -   **Changes**: Newly created to allow users to switch between supported languages (e.g., English, Arabic with RTL).
+
+-   ****
+    -   **Importance**: Main navigation menu.
+    -   **Changes**: Updated to include  and Family Sharing links. Currently being updated to be collapsible with animations. All static text now uses  translations.
+
+-   ****
+    -   **Importance**: Displays the status of real-time features.
+    -   **Changes**: Newly created to inform users about WebSocket connection limitations.
+
+-   ****
+    -   **Importance**: Manages global authentication state.
+    -   **Changes**: Refactored for robust social authentication, improved session persistence logic, and enhanced error handling.
+
+-   ****
+    -   **Importance**: Directory for internationalization configuration and translation files.
+    -   **Changes**: New directory structure with  (i18n config) and  containing translation files (, , , , ).
+
+-   ****
+    -   **Importance**: Centralized API service.
+    -   **Changes**: Added new API functions for family sharing. Updated  to dynamically use  for production deployments.
+
+-   ****
+    -   **Importance**: Main HTML file.
+    -   **Changes**: Updated to include PWA meta tags and link to .
+
+-   ****
+    -   **Importance**: PWA manifest file.
+    -   **Changes**: Created and configured for PWA features.
+
+-   ****
+    -   **Importance**: Environment variables for the React Native companion app.
+    -   **Changes**: Created to store backend URLs, replacing hardcoded values.
+
+-   **** and ****
+    -   **Importance**: Core UI components for the child's mobile app.
+    -   **Changes**: Removed hardcoded backend URLs, now utilizing environment variables.
+
+-   ****
+    -   **Importance**: Backend router for custom family sharing features.
+    -   **Changes**: Newly created with endpoints for inviting and managing family members. Refactored to accept a  instance.
+
+-   ****
+    -   **Importance**: Handles Google and Apple authentication on the backend.
+    -   **Changes**: Newly created, integrates  for Google OAuth and logic for Apple Sign-In.
+
+-   **** and ****
+    -   **Importance**: Frontend and backend environment variables.
+    -   **Changes**: Added , , , , .
+
+-   ****
+    -   **Importance**: Stores production-specific frontend environment variables.
+    -   **Changes**: Newly created for production configuration.
 </code_architecture>
 
 <pending_tasks>
-- **Build and Deploy Companion Apps**: The React Native companion app code and templates are complete, but the actual build process for iOS () and Android () has not been executed due to environment limitations. This is the final step required to make device control functional on physical devices.
+-   **Kubernetes Ingress Configuration**: Necessary to enable WebSocket support for real-time features.
+-   **Apple Sign In Configuration**: Requires proper domain setup in Apple Developer Console for full functionality.
+-   **React Native Companion App Build**: The actual build process for iOS (.ipa) and Android (.apk) apps is pending.
+-   **App Store Assets**: App icons and screenshots need to be created for App Store submission.
+-   **iOS Conversion Process**: The web app needs to be converted to an iOS application, likely using a cloud Mac service or build service.
 </pending_tasks>
 
 <current_work>
-The most recent work involved implementing two user-requested features: a family chat system and a revised per-child subscription model.
+The most recent work involves implementing an **animated, collapsible sidebar menu** in the frontend. This task requires modifying the  component to manage its collapsed state and integrate smooth transition animations, which is currently underway as indicated by the last file edits.
 
-1.  **Family Chat Implementation**:
-    -   A new  router was created in the backend to handle WebSocket events for sending and receiving messages.
-    -   A new  component was built for the frontend, providing the chat interface.
-    -   The backend  was updated to include the new chat router.
-    -   The frontend  and  were modified to add a Family Chat navigation tab and render the new component.
-
-2.  **Subscription Model Update**:
-    -   The mock data in  was updated to reflect the new pricing of .99/month and 9.99/year **per child**.
-    -   The  component was modified to display this new per-child pricing structure to the user.
-
-A backend  related to the  was identified and fixed, allowing the server to restart successfully. The work concluded after a comprehensive test and a final screenshot confirming that the new Family Chat interface was rendering correctly and the subscription modal showed the updated pricing logic. The application is stable with these new features integrated.
+Prior to this, significant efforts addressed critical deployment and authentication issues:
+1.  **Deployment Fix**: Resolved a white page error on the live URL by ensuring the application was correctly built and served in **production mode**, rather than development mode, which involved updating frontend build scripts and environment configurations (e.g., ,  for dynamic ).
+2.  **Google Login Fix**: Corrected a session persistence problem where users would log out immediately after successful Google authentication. This involved improving token storage and session management logic within  and the Google OAuth callback.
+3.  **WebSocket Status**: Implemented a  component to gracefully inform users about the limitations of real-time features due to external Kubernetes ingress configuration.
 </current_work>
 
 <optional_next_step>
-The latest features have been implemented and verified. I will now await your feedback or next set of requirements.
+Continue implementing the animated, collapsible sidebar menu in .
 </optional_next_step>

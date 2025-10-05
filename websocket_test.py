@@ -12,7 +12,7 @@ import time
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://screentime-parent.preview.emergentagent.com"
+BACKEND_URL = "https://guardtime.preview.emergentagent.com"
 API_URL = f"{BACKEND_URL}/api"
 WEBSOCKET_URL = BACKEND_URL
 
@@ -409,7 +409,7 @@ class WebSocketTester:
         try:
             # Test preflight request
             headers = {
-                'Origin': 'https://screentime-parent.preview.emergentagent.com',
+                'Origin': 'https://guardtime.preview.emergentagent.com',
                 'Access-Control-Request-Method': 'GET',
                 'Access-Control-Request-Headers': 'authorization'
             }

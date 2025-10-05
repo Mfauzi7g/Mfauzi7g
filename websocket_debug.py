@@ -13,7 +13,7 @@ def test_websocket_connection():
     print("=== WEBSOCKET CONNECTION DEBUGGING ===")
     
     # Test different connection methods
-    base_url = "https://screentime-parent.preview.emergentagent.com"
+    base_url = "https://guardtime.preview.emergentagent.com"
     
     # Method 1: Direct Socket.IO connection
     print("\n1. Testing direct Socket.IO connection...")
@@ -51,7 +51,7 @@ def test_websocket_with_namespace():
         sio = socketio.SimpleClient()
         
         # Try with /socket.io namespace
-        base_url = "https://screentime-parent.preview.emergentagent.com"
+        base_url = "https://guardtime.preview.emergentagent.com"
         sio.connect(base_url, namespaces=['/'])
         
         print("✅ Namespace connection successful!")
@@ -85,11 +85,11 @@ def test_websocket_upgrade():
             'Upgrade': 'websocket',
             'Sec-WebSocket-Key': 'dGhlIHNhbXBsZSBub25jZQ==',
             'Sec-WebSocket-Version': '13',
-            'Origin': 'https://screentime-parent.preview.emergentagent.com'
+            'Origin': 'https://guardtime.preview.emergentagent.com'
         }
         
         response = requests.get(
-            'https://screentime-parent.preview.emergentagent.com/socket.io/?EIO=4&transport=websocket',
+            'https://guardtime.preview.emergentagent.com/socket.io/?EIO=4&transport=websocket',
             headers=headers
         )
         
@@ -113,7 +113,7 @@ def test_socketio_polling():
     try:
         # Test polling endpoint
         response = requests.get(
-            'https://screentime-parent.preview.emergentagent.com/socket.io/?EIO=4&transport=polling'
+            'https://guardtime.preview.emergentagent.com/socket.io/?EIO=4&transport=polling'
         )
         
         print(f"Polling response: {response.status_code}")
@@ -143,7 +143,7 @@ def test_kubernetes_ingress():
         }
         
         response = requests.get(
-            'https://screentime-parent.preview.emergentagent.com/',
+            'https://guardtime.preview.emergentagent.com/',
             headers=headers,
             allow_redirects=False
         )

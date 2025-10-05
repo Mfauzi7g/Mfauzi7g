@@ -11,7 +11,7 @@ from datetime import datetime, date
 from typing import Dict, Any
 
 # Get backend URL from environment
-BACKEND_URL = "https://screentime-parent.preview.emergentagent.com/api"
+BACKEND_URL = "https://guardtime.preview.emergentagent.com/api"
 
 class ScreenTimeAPITester:
     def __init__(self):
@@ -1340,7 +1340,7 @@ class ScreenTimeAPITester:
             
             # Test CORS headers
             headers = {
-                'Origin': 'https://screentime-parent.preview.emergentagent.com',
+                'Origin': 'https://guardtime.preview.emergentagent.com',
                 'Access-Control-Request-Method': 'GET',
                 'Access-Control-Request-Headers': 'upgrade,connection,sec-websocket-key,sec-websocket-version'
             }
