@@ -134,6 +134,10 @@ const Dashboard = () => {
     loadFamily();
   };
 
+  const handleToggleSidebar = () => {
+    setIsSidebarCollapsed(!isSidebarCollapsed);
+  };
+
   const renderContent = () => {
     switch (activeTab) {
       case 'overview':
