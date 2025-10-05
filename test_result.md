@@ -237,13 +237,13 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Animated Collapsible Sidebar (NEW FEATURE - NEEDS TESTING)"
+    - "All major features tested and working"
   stuck_tasks:
     - "WebSocket Parent-Child Communication (requires Kubernetes ingress configuration)"
     - "Sample Screen Time Data Creation (minor issue - 422 errors)"
     - "Companion App Deployment (requires mobile app building, not frontend testing)"
   test_all: false
-  test_priority: "new_feature_first"
+  test_priority: "maintenance_mode"
 
   - task: "Family Chat System (NEW FEATURE)"
     implemented: true
