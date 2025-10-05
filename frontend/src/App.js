@@ -220,9 +220,13 @@ const Dashboard = () => {
         activeTab={activeTab}
         onTabChange={handleTabChange}
         onUpgrade={handleUpgrade}
+        isCollapsed={isSidebarCollapsed}
+        onToggleCollapse={handleToggleSidebar}
       />
       
-      <div className="flex-1 overflow-y-auto">
+      <div className={`flex-1 overflow-y-auto transition-all duration-300 ease-in-out ${
+        isSidebarCollapsed ? 'ml-0' : 'ml-0'
+      }`}>
         <div className="p-8">
           <WebSocketStatus />
           {renderContent()}
