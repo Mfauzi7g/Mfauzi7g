@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Button } from './ui/button';
@@ -15,7 +15,10 @@ import {
   Users,
   Gift,
   Radio,
-  MessageCircle
+  MessageCircle,
+  Menu,
+  X,
+  ChevronLeft
 } from 'lucide-react';
 import { mockSubscriptionData } from '../data/mock';
 
