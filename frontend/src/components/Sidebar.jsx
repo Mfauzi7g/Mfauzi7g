@@ -22,8 +22,20 @@ import {
 } from 'lucide-react';
 import { mockSubscriptionData } from '../data/mock';
 
-const Sidebar = ({ selectedChild, children, onSelectChild, activeTab, onTabChange, onUpgrade }) => {
+const Sidebar = ({ selectedChild, children, onSelectChild, activeTab, onTabChange, onUpgrade, isCollapsed, onToggleCollapse }) => {
   const { t } = useTranslation();
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if mobile screen
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   const menuItems = [
     { id: 'overview', label: t('sidebar.overview'), icon: BarChart3 },
