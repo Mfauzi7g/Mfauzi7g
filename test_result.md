@@ -237,13 +237,13 @@ metadata:
 
 test_plan:
   current_focus:
-    - "WebSocket Parent-Child Communication (CRITICAL ISSUE) - INFRASTRUCTURE ISSUE IDENTIFIED"
+    - "Animated Collapsible Sidebar (NEW FEATURE - NEEDS TESTING)"
   stuck_tasks:
     - "WebSocket Parent-Child Communication (requires Kubernetes ingress configuration)"
     - "Sample Screen Time Data Creation (minor issue - 422 errors)"
     - "Companion App Deployment (requires mobile app building, not frontend testing)"
-  test_all: true
-  test_priority: "infrastructure_fix_required"
+  test_all: false
+  test_priority: "new_feature_first"
 
   - task: "Family Chat System (NEW FEATURE)"
     implemented: true
