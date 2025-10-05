@@ -200,7 +200,8 @@ const Sidebar = ({ selectedChild, children, onSelectChild, activeTab, onTabChang
           })}
         </div>
       </nav>
-    </div>
+      </div>
+    </>
   );
 };
 
