@@ -51,20 +51,59 @@ const Sidebar = ({ selectedChild, children, onSelectChild, activeTab, onTabChang
   ];
 
   return (
-    <div className="w-64 bg-white border-r border-gray-200 h-screen overflow-y-auto">
-      {/* Header */}
-      <div className="p-6 border-b border-gray-100">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Clock className="w-8 h-8 text-blue-600" />
-            <div>
-              <h1 className="text-xl font-semibold text-gray-900">{t('app.title')}</h1>
-              <p className="text-sm text-gray-500">{t('app.subtitle')}</p>
+    <>
+      {/* Mobile Overlay */}
+      {isMobile && !isCollapsed && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          onClick={onToggleCollapse}
+        />
+      )}
+      
+      {/* Sidebar */}
+      <div className={`
+        h-full flex flex-col bg-white border-r border-gray-200 transition-all duration-300 ease-in-out z-50
+        ${isCollapsed ? 'w-16' : 'w-80'}
+        ${isMobile ? 'fixed left-0 top-0 shadow-lg' : 'relative'}
+        ${isMobile && isCollapsed ? '-translate-x-full' : 'translate-x-0'}
+      `}>
+        {/* Header */}
+        <div className="p-4 border-b border-gray-100">
+          <div className="flex items-center justify-between">
+            {!isCollapsed && (
+              <div className="flex items-center space-x-2">
+                <Clock className="w-8 h-8 text-blue-600" />
+                <div>
+                  <h1 className="text-xl font-semibold text-gray-900">{t('app.title')}</h1>
+                  <p className="text-sm text-gray-500">{t('app.subtitle')}</p>
+                </div>
+              </div>
+            )}
+            
+            {isCollapsed && (
+              <Clock className="w-8 h-8 text-blue-600 mx-auto" />
+            )}
+            
+            <div className="flex items-center space-x-2">
+              {!isCollapsed && <LanguageSelector />}
+              
+              {/* Collapse Toggle Button */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onToggleCollapse}
+                className="p-2 hover:bg-gray-100"
+                title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+              >
+                {isCollapsed ? (
+                  <Menu className="w-5 h-5" />
+                ) : (
+                  <ChevronLeft className="w-5 h-5" />
+                )}
+              </Button>
             </div>
           </div>
-          <LanguageSelector />
         </div>
-      </div>
 
       {/* Subscription Status */}
       {!mockSubscriptionData.isSubscribed && (
