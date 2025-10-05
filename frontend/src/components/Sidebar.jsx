@@ -223,11 +223,12 @@ const Sidebar = ({ selectedChild, children, onSelectChild, activeTab, onTabChang
               <Button
                 key={item.id}
                 variant={activeTab === item.id ? 'secondary' : 'ghost'}
-                className="w-full justify-start text-left"
+                className={`w-full ${isCollapsed ? 'justify-center px-2' : 'justify-start'} text-left`}
                 onClick={() => onTabChange(item.id)}
+                title={isCollapsed ? item.label : undefined}
               >
-                <Icon className="w-4 h-4 mr-3" />
-                {item.label}
+                <Icon className={`w-4 h-4 ${isCollapsed ? '' : 'mr-3'}`} />
+                {!isCollapsed && item.label}
               </Button>
             );
           })}
