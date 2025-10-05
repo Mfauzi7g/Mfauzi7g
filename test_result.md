@@ -335,6 +335,18 @@ test_plan:
           agent: "testing"
           comment: "CRITICAL INFRASTRUCTURE ISSUE: WebSocket connections failing due to Kubernetes ingress configuration. Socket.IO server properly configured in backend, but ingress routes /socket.io/ requests to frontend instead of backend. Device control HTTP APIs working perfectly (pairing codes, device registration, status monitoring). ROOT CAUSE: Missing WebSocket support annotations in Kubernetes NGINX ingress. SOLUTION REQUIRED: Infrastructure team must add ingress annotations for WebSocket support: nginx.ingress.kubernetes.io/proxy-http-version: '1.1', nginx.ingress.kubernetes.io/proxy-set-header-upgrade: '$http_upgrade', nginx.ingress.kubernetes.io/proxy-set-header-connection: 'upgrade', nginx.ingress.kubernetes.io/proxy-read-timeout: '3600', nginx.ingress.kubernetes.io/proxy-send-timeout: '3600', nginx.ingress.kubernetes.io/enable-websocket: 'true'."
 
+  - task: "Animated Collapsible Sidebar (NEW FEATURE)"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/Sidebar.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "NEW FEATURE: Implemented animated collapsible sidebar with smooth transitions. Added state management in App.js for collapsed state, updated Sidebar.jsx to show icons-only when collapsed, subscription card adapts to collapsed state, family members show avatars only when collapsed, navigation items show tooltips when collapsed. Includes toggle button with proper icon changes (hamburger/chevron). Mobile responsive behavior maintained."
+
   - task: "Companion App Deployment (PENDING)"
     implemented: false
     working: "NA"
