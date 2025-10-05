@@ -108,25 +108,39 @@ const Sidebar = ({ selectedChild, children, onSelectChild, activeTab, onTabChang
       {/* Subscription Status */}
       {!mockSubscriptionData.isSubscribed && (
         <div className="p-4">
-          <Card className="bg-gradient-to-r from-purple-500 to-blue-600 text-white">
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-2 mb-2">
-                <Crown className="w-5 h-5" />
-                <span className="font-semibold">{t('sidebar.free_trial')}</span>
-              </div>
-              <p className="text-sm mb-3 opacity-90">
-                {Math.ceil((mockSubscriptionData.trialEndsAt - new Date()) / (1000 * 60 * 60 * 24))} {t('sidebar.days_left')}
-              </p>
-              <Button 
-                variant="secondary" 
-                size="sm" 
-                className="w-full bg-white text-purple-600 hover:bg-gray-50"
+          {!isCollapsed ? (
+            <Card className="bg-gradient-to-r from-purple-500 to-blue-600 text-white">
+              <CardContent className="p-4">
+                <div className="flex items-center space-x-2 mb-2">
+                  <Crown className="w-5 h-5" />
+                  <span className="font-semibold">{t('sidebar.free_trial')}</span>
+                </div>
+                <p className="text-sm mb-3 opacity-90">
+                  {Math.ceil((mockSubscriptionData.trialEndsAt - new Date()) / (1000 * 60 * 60 * 24))} {t('sidebar.days_left')}
+                </p>
+                <Button 
+                  variant="secondary" 
+                  size="sm" 
+                  className="w-full bg-white text-purple-600 hover:bg-gray-50"
+                  onClick={onUpgrade}
+                >
+                  {t('sidebar.upgrade_now')}
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="flex justify-center">
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={onUpgrade}
+                className="p-2 hover:bg-purple-50"
+                title={t('sidebar.upgrade_now')}
               >
-                {t('sidebar.upgrade_now')}
+                <Crown className="w-5 h-5 text-purple-600" />
               </Button>
-            </CardContent>
-          </Card>
+            </div>
+          )}
         </div>
       )}
 
